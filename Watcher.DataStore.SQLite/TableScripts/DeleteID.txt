@@ -1,0 +1,1 @@
+﻿DELETE FROM {0} WHERE ID={1}

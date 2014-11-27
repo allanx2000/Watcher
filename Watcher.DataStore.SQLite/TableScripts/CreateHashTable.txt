@@ -1,0 +1,9 @@
+﻿CREATE TABLE {0} (
+  Hash			 char(32),
+  SourceID       integer NOT NULL,
+  AddedDate      datetime NOT NULL,
+  FOREIGN KEY (SourceID)
+    REFERENCES {1}(ID)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+);

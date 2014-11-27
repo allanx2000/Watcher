@@ -1,0 +1,13 @@
+﻿CREATE TABLE {0} (
+  ID             integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+  Name           varchar(30) NOT NULL UNIQUE,
+  SourceID       integer NOT NULL,
+  AddedDate      datetime NOT NULL,
+  IsNew          boolean NOT NULL,
+  ActionContent  text,
+  /* Foreign keys */
+  FOREIGN KEY (SourceID)
+    REFERENCES {1}(ID)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+);

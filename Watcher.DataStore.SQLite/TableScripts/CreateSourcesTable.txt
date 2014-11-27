@@ -1,0 +1,6 @@
+﻿CREATE TABLE {0} (
+  ID          integer PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
+  ProviderID  varchar(20) NOT NULL DEFAULT NO_VALUE,
+  Name        varchar(50) UNIQUE DEFAULT NO_VALUE,
+  MetaData    text
+);

@@ -1,0 +1,3 @@
+﻿UPDATE {0}
+SET Name='{1}', MetaData='{2}'
+WHERE ID={3};

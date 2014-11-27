@@ -1,0 +1,3 @@
+﻿UPDATE {0} 
+SET IsNew={1}
+WHERE ID={2}            
