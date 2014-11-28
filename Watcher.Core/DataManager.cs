@@ -1,7 +1,8 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
+using Watcher.Core.Internal;
 using Watcher.Core.Items;
 
 namespace Watcher.Core
@@ -49,65 +50,90 @@ namespace Watcher.Core
             return providers;
         }
 
-        public void UpdateBooks(int updateTimeoutInMinutes = 2, Action<List<AbstractItem>, string> callback = null, bool multithread = true)
+        public void UpdateItems(int updateTimeoutInMinutes = 2, Action<List<AbstractItem>, string> callback = null, bool multithread = true)
         {
-            List<Thread> threads = new List<Thread>();
-            int threadCount = 0;
+            ClearMessages();
 
             List<AbstractItem> addedItems = new List<AbstractItem>();
 
-            foreach (AbstractSource s in DataStore.Sources)
+            try
             {
-                foreach (var p in providers)
+                List<Thread> threads = new List<Thread>();
+                int threadCount = 0;
+
+               
+                foreach (AbstractSource s in DataStore.Sources)
                 {
-                    if (!p.CanCheck(s)) continue;
-                    
-                    if (multithread)
-                        threads.Add(new Thread(() =>
+                    foreach (var p in providers)
+                    {
+                        if (!p.CanCheck(s)) continue;
+
+                        if (multithread) //Add it as a thread
+                            threads.Add(new Thread(() =>
+                            {
+                                DoItemsCheck(p, s, addedItems);
+
+                                threadCount--;
+                            }));
+                        else //Do it now
                         {
                             DoItemsCheck(p, s, addedItems);
-                                
-                            threadCount--;
-                        }));
-                    else
-                    {
-                        DoItemsCheck(p, s, addedItems);
+                        }
                     }
                 }
-            }
 
-            if (multithread)
-            {
-                var forceEnd = DateTime.Now.AddMinutes(updateTimeoutInMinutes);
 
-                threadCount = threads.Count;
-
-                var th = new Thread(() =>
+                if (multithread)
                 {
-                    foreach (var t in threads)
+                    var forceEnd = DateTime.Now.AddMinutes(updateTimeoutInMinutes);
+
+                    threadCount = threads.Count;
+
+                    var th = new Thread(() =>
                     {
-                        t.Start();
-                    }
+                        foreach (var t in threads)
+                        {
+                            t.Start();
+                        }
 
-                    while (threadCount > 0 && DateTime.Now < forceEnd)
-                    {
-                        Thread.Sleep(5000);
-                    }
+                        while (threadCount > 0 && DateTime.Now < forceEnd)
+                        {
+                            Thread.Sleep(5000);
+                        }
 
-                    callback.Invoke(addedItems, threadCount > 0? "Timed Out!" : null);
-                });
+                        callback.Invoke(addedItems, threadCount > 0 ? "Timed Out!" : null);
+                    });
 
-                th.Start();
+                    th.Start();
+                }
+                else
+                    callback.Invoke(addedItems, null);
             }
-            else
-                callback.Invoke(addedItems, null);
-
-            /*while (threadCount != 0)
+            catch (Exception e)
             {
-                Thread.Sleep(5000);
-            }
 
-            Console.WriteLine(addedItems.Count);*/
+                callback.Invoke(addedItems, e.Message);
+            }
+        }
+
+        private MTObservableCollection<string> messages = new MTObservableCollection<string>();
+
+        public MTObservableCollection<string> Messages
+        {
+            get
+            {
+                return messages;
+            }
+        }
+
+        public void ClearMessages()
+        {
+            messages.Clear();
+        }
+
+        public void AddMessage(string message)
+        {
+            messages.Add(message);
         }
 
         private void DoItemsCheck(AbstractProvider p, AbstractSource s, List<AbstractItem> addedItems)
@@ -117,13 +143,18 @@ namespace Watcher.Core
                 var results = p.CheckForNewItems(s);
                 if (results != null)
                 {
-                    addedItems.AddRange(dataStore.AddItems(results));
+                    results = dataStore.AddItems(results);
+                    addedItems.AddRange(results);
                 }
+
+                messages.Add(String.Format("Source: {0}, New Items: {1}", 
+                    s.GetDisplayName(), results == null ? 0 : results.Count));
             }
             catch (Exception e)
             {
 
             }
         }
+
     }
 }

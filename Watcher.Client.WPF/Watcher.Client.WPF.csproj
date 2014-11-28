@@ -107,16 +107,14 @@
     <Compile Include="SourceEditor.xaml.cs">
       <DependentUpon>SourceEditor.xaml</DependentUpon>
     </Compile>
-    <Compile Include="TestWindow.xaml.cs">
-      <DependentUpon>TestWindow.xaml</DependentUpon>
+    <Compile Include="SimpleDialogWindow.xaml.cs">
+      <DependentUpon>SimpleDialogWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utils.cs" />
-    <Compile Include="ViewModels\CommandHelper.cs" />
     <Compile Include="ViewModels\ItemViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\RunConfigsViewModel.cs" />
     <Compile Include="ViewModels\SourceViewModel.cs" />
-    <Compile Include="ViewModels\ViewModel.cs" />
     <Page Include="ColorPicker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -141,7 +139,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="TestWindow.xaml">
+    <Page Include="SimpleDialogWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -178,6 +176,14 @@
     <ProjectReference Include="..\..\Innouvous.Utils\Innouvous.Utils.DialogWindow\Innouvous.Utils.DialogWindow.csproj">
       <Project>{faf335ca-56b5-4770-8e70-4c37d23255f1}</Project>
       <Name>Innouvous.Utils.DialogWindow</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Innouvous.Utils\Innouvous.Utils.MessageBoxFactory\Innouvous.Utils.MessageBoxFactory.csproj">
+      <Project>{6bddd1f2-3bc0-431d-923d-ce76681a3851}</Project>
+      <Name>Innouvous.Utils.MessageBoxFactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Innouvous.Utils\Innouvous.Utils.MVVM\Innouvous.Utils.MVVM.csproj">
+      <Project>{b90d1bd6-db68-416c-9150-ba4e3c73a3f2}</Project>
+      <Name>Innouvous.Utils.MVVM</Name>
     </ProjectReference>
     <ProjectReference Include="..\Watcher.Core\Watcher.Core.csproj">
       <Project>{fd7e4abc-e1ce-498a-9d76-f0707d65a0c5}</Project>

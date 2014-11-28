@@ -1,10 +1,16 @@
-﻿using System;
+﻿using Innouvous.Utils;
+using Innouvous.Utils.MVVM;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Windows;
 using System.Windows.Data;
+using System.Windows.Input;
 using Watcher.Core;
 using Watcher.Core.Internal;
 using Watcher.Core.Items;
+using System.Linq;
+using System.Collections.Specialized;
 
 namespace Watcher.Client.WPF.ViewModels
 {
@@ -22,7 +28,49 @@ namespace Watcher.Client.WPF.ViewModels
         private MTObservableCollection<SourceViewModel> sources = new MTObservableCollection<SourceViewModel>();
 
         #region Properties
-        public ICollectionView SortedView { get; private set; }
+
+        private ItemViewModel selectedItem;
+        public ItemViewModel SelectedItem
+        {
+            get
+            {
+                return selectedItem;
+            }
+            set
+            {
+                selectedItem = value;
+
+                DoItemAction.RaiseCanExecuteChanged();
+
+                RaisePropertyChanged("SelectedItem");
+            }
+        }
+
+        private SourceViewModel selectedSource;
+        public SourceViewModel SelectedSource
+        {
+            get
+            {
+                return selectedSource;
+            }
+            set
+            {
+                selectedSource = value;
+
+                RaisePropertyChanged("SelectedSource");
+
+                editSourceCommand.RaiseCanExecuteChanged();
+                removeSourceCommand.RaiseCanExecuteChanged();
+            }
+        }
+
+        public ICollectionView SortedView
+        {
+            get
+            {
+                return sortedView.View;
+            }
+        }
 
         public bool UpdateButtonsEnabled
         {
@@ -64,17 +112,27 @@ namespace Watcher.Client.WPF.ViewModels
             }
         }
 
+        public string LatestUpdateMessage { get; private set; }
         public string LastUpdatedString
         {
             get
             {
                 if (isUpdating)
-                    return "Updating...";
+                    return LatestUpdateMessage;
                 else
                 {
+                    string message = "Last Updated: ";
+
                     if (lastUpdated == null)
-                        return "NA";
-                    else return lastUpdated.Value.ToShortDateString() + " " + lastUpdated.Value.ToShortTimeString();
+                    {
+                        message += "NA";
+                    }
+                    else
+                    {
+                        message += lastUpdated.Value.ToShortDateString() + " " + lastUpdated.Value.ToShortTimeString();
+                    }
+
+                    return message;
                 }
             }
         }
@@ -112,14 +170,224 @@ namespace Watcher.Client.WPF.ViewModels
 
         #endregion
 
+        #region Commands
+
+        #region Sources
+
+        private CommandHelper removeSourceCommand;
+
+        public CommandHelper RemoveSourceCommand
+        {
+            get
+            {
+                if (removeSourceCommand == null)
+                {
+                    removeSourceCommand = new CommandHelper(RemoveSource, CanEditSource);
+                }
+                return removeSourceCommand;
+            }
+        }
+
+        private void RemoveSource(object sender)
+        {
+            if (SelectedSource != null)
+            {
+
+                DataManager.Instance().DataStore.RemoveSource(SelectedSource.Data);
+                RemoveSource(SelectedSource);
+            }
+        }
+
+        private void RemoveSource(SourceViewModel svm)
+        {
+            Sources.Remove(svm);
+            SVMLookup.Remove(svm.Data);
+
+            List<ItemViewModel> itemsToRemove = new List<ItemViewModel>();
+
+            foreach (var i in items)
+            {
+                if (i.SourceName == svm.SourceName)
+                    itemsToRemove.Add(i);
+            }
+
+            foreach (var i in itemsToRemove)
+            {
+                items.Remove(i);
+            }
+
+        }
+
+        private CommandHelper editSourceCommand;
+
+        public CommandHelper EditSourceCommand
+        {
+            get
+            {
+                if (editSourceCommand == null)
+                    editSourceCommand = new CommandHelper(EditSource, (sender) => CanEditSource(sender));
+
+                return editSourceCommand;
+            }
+        }
+
+        private bool CanEditSource(object sender)
+        {
+            return SelectedSource != null;
+        }
+
+        private void EditSource(object sender)
+        {
+            if (SelectedSource != null)
+            {
+                SourceEditor se = new SourceEditor(SelectedSource);
+
+                se.ShowDialog();
+            }
+        }
+
+        private CommandHelper addNewSourceCommand;
+
+        public CommandHelper AddNewSourceCommand
+        {
+            get
+            {
+                if (addNewSourceCommand == null)
+                    addNewSourceCommand = new CommandHelper(new Action<object>(AddSource));
+
+                return addNewSourceCommand;
+            }
+        }
+
+        public void AddSource(object sender)
+        {
+            SourceEditor se = new SourceEditor();
+
+            try
+            {
+                se.ShowDialog();
+
+                var svm = se.GetSourceViewModel();
+
+                if (svm != null)
+                {
+                    Sources.Add(svm);
+                    SVMLookup.Add(svm.Data, svm);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBoxFactory.ShowError(ex);
+            }
+        }
+
+        #endregion
+
+        #region Items
+
+
+        private CommandHelper doItemAction;
+        public CommandHelper DoItemAction
+        {
+            get
+            {
+                if (doItemAction == null)
+                {
+                    doItemAction = new CommandHelper(PerformItemAction, (sender) => SelectedItem != null);
+                }
+
+                return doItemAction;
+            }
+        }
+
+        public void PerformItemAction(object sender)
+        {
+            var o = SelectedItem;
+
+            if (o != null)
+            {
+                var provider = DataManager.Instance().GetProviders().First(x => x.ProviderId == o.Provider);
+                if (provider != null)
+                {
+                    provider.DoAction(o.Data);
+                    o.Data.SetNew(false);
+                    DataManager.Instance().DataStore.UpdateItem(o.Data);
+                
+                    SortedView.Refresh();
+                }
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Items Update Logic
+
+        public CommandHelper UpdateCommand
+        {
+            get
+            {
+                return new CommandHelper((obj) => DoUpdate());
+            }
+        }
+
+        private MTObservableCollection<string> updateMessages = new MTObservableCollection<string>();
+
+        private Properties.Settings AppConfigs = Properties.Settings.Default;
+
+        public void DoUpdate()
+        {
+            updateMessages.Clear();
+
+            IsUpdating = true;
+
+            DataManager.Instance().UpdateItems(AppConfigs.UpdateTimeout, OnFinishedUpdating);
+        }
+
+        private void OnFinishedUpdating(List<AbstractItem> newItems, string error)
+        {
+            LastUpdated = DateTime.Now;
+            IsUpdating = false;
+
+            foreach (var i in newItems)
+            {
+                try
+                {
+
+                    var svm = GetSVM(i.GetSource());
+                    Items.Add(new ItemViewModel(i, svm));
+                }
+                catch (Exception ex)
+                {
+                    Console.Write(ex.Message);
+                }
+            }
+
+            //show errors
+            if (error != null)
+                MessageBox.Show(error);
+        }
+
+        private void UpdateItemButton_Click(object sender, RoutedEventArgs e)
+        {
+            DoUpdate();
+        }
+
+        #endregion
+
+
         public SourceViewModel GetSVM(AbstractSource source)
         {
             return SVMLookup[source];
         }
 
 
-        public MainWindowViewModel(IEnumerable<AbstractSource> sources, IEnumerable<AbstractItem> items)
+        public MainWindowViewModel()
         {
+            var sources = DataManager.Instance().DataStore.Sources;
+            var items = DataManager.Instance().DataStore.Items;
+            
             PopulateSVMLookup(sources);
 
             foreach (var i in items)
@@ -128,6 +396,18 @@ namespace Watcher.Client.WPF.ViewModels
             }
 
             CreateSortedItemsView();
+
+            DataManager.Instance().Messages.CollectionChanged += Messages_CollectionChanged;
+        }
+
+        private void Messages_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e != null && e.NewItems != null && e.NewItems.Count > 0)
+            {
+                LatestUpdateMessage = (string) e.NewItems[0];
+
+                RaisePropertyChanged("LastUpdatedString");
+            }
         }
 
         private void CreateSortedItemsView()
@@ -141,8 +421,8 @@ namespace Watcher.Client.WPF.ViewModels
             sortedView.SortDescriptions.Add(new SortDescription("AddedDate", ListSortDirection.Descending));
             sortedView.SortDescriptions.Add(new SortDescription("SourceName", ListSortDirection.Descending));
             sortedView.SortDescriptions.Add(new SortDescription("NewLabel", ListSortDirection.Descending));
-            
-            SortedView = sortedView.View;
+
+            RaisePropertyChanged("SortedView");
         }
 
         void DoFilter(object sender, FilterEventArgs e)
@@ -173,33 +453,8 @@ namespace Watcher.Client.WPF.ViewModels
             }
         }
 
-
-
-        public void AddSource(SourceViewModel svm)
-        {
-            Sources.Add(svm);
-            SVMLookup.Add(svm.Data, svm);
-        }
-
-        public void RemoveSource(SourceViewModel svm)
-        {
-            Sources.Remove(svm);
-            SVMLookup.Remove(svm.Data);
-
-            List<ItemViewModel> itemsToRemove = new List<ItemViewModel>();
-            
-            foreach ( var i in items)
-            {
-                if (i.SourceName == svm.SourceName)
-                    itemsToRemove.Add(i);
-            }
-
-            foreach (var i in itemsToRemove)
-            {
-                items.Remove(i);
-            }
+  
         
-        }
     }
 
 }

@@ -1,4 +1,4 @@
-﻿<dlg:DialogWindow x:Class="Watcher.Client.WPF.TestWindow"
+﻿<dlg:DialogWindow x:Class="Watcher.Client.WPF.SimpleDialogWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:dlg="clr-namespace:Innouvous.Utils;assembly=Innouvous.Utils.DialogWindow"

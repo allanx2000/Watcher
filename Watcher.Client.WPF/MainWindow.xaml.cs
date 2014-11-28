@@ -10,6 +10,7 @@ using Watcher.Client.WPF.ViewModels;
 using Watcher.Core.Loaders;
 using Watcher.DataStore.SQLite;
 using System.Windows.Threading;
+using Innouvous.Utils;
 
 namespace Watcher.Client.WPF
 {
@@ -42,7 +43,7 @@ namespace Watcher.Client.WPF
                 timer.Tick += (sender, e) =>
                 {
                     if (!viewModel.IsUpdating)
-                        DoUpdate();
+                        viewModel.DoUpdate();
                 };
 
             }
@@ -80,7 +81,7 @@ namespace Watcher.Client.WPF
                 Application.Current.Shutdown(0);
             }
 
-            DoUpdate();
+            viewModel.DoUpdate();
 
         }
 
@@ -97,11 +98,7 @@ namespace Watcher.Client.WPF
             DataManager.Initialize(datastore, providers);
 
             //Create the View Model
-            var sources = DataManager.Instance().DataStore.Sources;
-
-            var items = DataManager.Instance().DataStore.Items;
-
-            viewModel = new MainWindowViewModel(sources, items);
+            viewModel = new MainWindowViewModel();
             
             this.DataContext = viewModel;
 
@@ -111,107 +108,9 @@ namespace Watcher.Client.WPF
             ResetUpdateTimer();
         }
 
-
-        private void AddSourceButton_Click(object sender, RoutedEventArgs e)
-        {
-            SourceEditor se = new SourceEditor();
-
-            try
-            {
-                se.ShowDialog();
-
-                var svm = se.GetSourceViewModel();
-
-                if (svm != null)
-                    viewModel.AddSource(svm);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
-        private void RemoveSourceButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (SourcesListBox.SelectedItem != null)
-            {
-                SourceViewModel svm = (SourceViewModel) SourcesListBox.SelectedItem;
-
-                DataManager.Instance().DataStore.RemoveSource(svm.Data);
-                viewModel.RemoveSource(svm);
-            }
-
-        }
-
-        private void EditSourceButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (SourcesListBox.SelectedItem != null)
-            {
-                SourceViewModel svm = (SourceViewModel)SourcesListBox.SelectedItem;
-
-                SourceEditor se = new SourceEditor(svm);
-
-                se.ShowDialog();
-
-
-            }
-        }
-
-        private void DoUpdate()
-        {
-            viewModel.IsUpdating = true;
-
-            DataManager.Instance().UpdateBooks(AppConfigs.UpdateTimeout,
-                (addedItems, error) =>
-                {
-                    Dispatcher.Invoke(new AddedItemsHandler(OnUpdateAction), addedItems, error);
-                });
-        }
-
-        private void OnUpdateAction(List<AbstractItem> newItems, string error)
-        {
-            viewModel.LastUpdated = DateTime.Now;
-                    viewModel.IsUpdating = false;
-
-                    foreach (var i in newItems)
-                    {
-                        try
-                        {
-
-                            var svm = viewModel.GetSVM(i.GetSource());
-                            viewModel.Items.Add(new ItemViewModel(i, svm));
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.Write(ex.Message);
-                        }
-                    }
-
-                    //show errors
-                    if (error != null)
-                        MessageBox.Show(error);
-        }
-
-        private void UpdateItemButton_Click(object sender, RoutedEventArgs e)
-        {
-            DoUpdate();
-
-        }
-
         private void ItemsListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            var o = ItemsListBox.SelectedItem as ItemViewModel;
-
-            if (o != null)
-            {
-                GetProvider(o.Data).DoAction(o.Data);
-
-                //Process.Start(o.URL);
-
-                o.Data.SetNew(false);
-                DataManager.Instance().DataStore.UpdateItem(o.Data);
-                viewModel.SortedView.Refresh();
-            }
+            viewModel.PerformItemAction(sender);
         }
 
         private AbstractProvider GetProvider(AbstractItem o)
@@ -235,11 +134,6 @@ namespace Watcher.Client.WPF
             viewModel.SortedView.Refresh();
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            //ShowAllCheckBox.GetBindingExpression(ComboBox.ItemsSourceProperty).UpdateTarget();
-        }
-
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             if (viewModel.IsUpdating)
@@ -248,7 +142,6 @@ namespace Watcher.Client.WPF
             }
             else Application.Current.Shutdown(0);
         }
-
 
         private void MarkAllButton_OnClick(object sender, RoutedEventArgs e)
         {
@@ -287,11 +180,16 @@ namespace Watcher.Client.WPF
             }
         }
 
-        private void TestButton_Click(object sender, RoutedEventArgs e)
+        private void LastUpdatedLabel_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            var win = new TestWindow();
+            string message = String.Join("\r\n", DataManager.Instance().Messages);
 
-            win.ShowDialog();
+            var opts = DialogControlOptions.SetTextBoxMessageOptions(
+                "Status", message , false, null);
+
+            var window = new SimpleDialogWindow(opts);
+
+            window.ShowDialog();
         }
     }
 }
