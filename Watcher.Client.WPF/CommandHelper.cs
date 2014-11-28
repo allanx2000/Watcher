@@ -40,5 +40,11 @@ namespace Watcher.Client.WPF
         {
             return canExecute.Invoke(parameter);
         }
+
+        public void RaiseCanExecuteChanged()
+        {
+            if (CanExecuteChanged != null)
+                CanExecuteChanged.Invoke(this, EventArgs.Empty);
+        }
     }
 }
