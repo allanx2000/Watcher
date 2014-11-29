@@ -7,7 +7,7 @@ using Watcher.Core.Items;
 
 namespace Watcher.Core
 {
-    
+
     public class DataManager
     {
         private static DataManager _manager;
@@ -19,9 +19,9 @@ namespace Watcher.Core
 
         public static DataManager Instance()
         {
-                if (_manager == null)
-                    throw new Exception("DataManager is unitialized");
-                else return _manager;
+            if (_manager == null)
+                throw new Exception("DataManager is unitialized");
+            else return _manager;
         }
 
         //Instance
@@ -50,6 +50,14 @@ namespace Watcher.Core
             return providers;
         }
 
+        struct UpdateParameters
+        {
+            public List<AbstractItem> AddedItems { get; set; }
+            public int UpdateTimeOut { get; set; }
+            public Action<List<AbstractItem>, string> Callback { get; set; }
+            public List<Thread> WorkerThreads { get; set; }
+        }
+
         public void UpdateItems(int updateTimeoutInMinutes = 2, Action<List<AbstractItem>, string> callback = null, bool multithread = true)
         {
             ClearMessages();
@@ -59,9 +67,9 @@ namespace Watcher.Core
             try
             {
                 List<Thread> threads = new List<Thread>();
-                int threadCount = 0;
+                //int threadCount = 0;
 
-               
+
                 foreach (AbstractSource s in DataStore.Sources)
                 {
                     foreach (var p in providers)
@@ -73,7 +81,7 @@ namespace Watcher.Core
                             {
                                 DoItemsCheck(p, s, addedItems);
 
-                                threadCount--;
+                                //threadCount--;
                             }));
                         else //Do it now
                         {
@@ -85,26 +93,21 @@ namespace Watcher.Core
 
                 if (multithread)
                 {
-                    var forceEnd = DateTime.Now.AddMinutes(updateTimeoutInMinutes);
+                    //var forceEnd = DateTime.Now.AddMinutes(updateTimeoutInMinutes);
 
-                    threadCount = threads.Count;
+                    //threadCount = threads.Count;
 
-                    var th = new Thread(() =>
+                    UpdateParameters threadParams = new UpdateParameters()
                     {
-                        foreach (var t in threads)
-                        {
-                            t.Start();
-                        }
+                        Callback = callback,
+                        UpdateTimeOut = updateTimeoutInMinutes,
+                        WorkerThreads = threads,
+                        AddedItems = addedItems
+                    };
 
-                        while (threadCount > 0 && DateTime.Now < forceEnd)
-                        {
-                            Thread.Sleep(5000);
-                        }
+                    var th = new Thread(DoUpdates);
 
-                        callback.Invoke(addedItems, threadCount > 0 ? "Timed Out!" : null);
-                    });
-
-                    th.Start();
+                    th.Start(threadParams);
                 }
                 else
                     callback.Invoke(addedItems, null);
@@ -114,6 +117,35 @@ namespace Watcher.Core
 
                 callback.Invoke(addedItems, e.Message);
             }
+        }
+
+        private void DoUpdates(object p)
+        {
+            if (!(p is UpdateParameters))
+                throw new Exception("Parameter invalid");
+
+            var paramz = (UpdateParameters)p;
+
+            DateTime timeout = DateTime.Now.AddMinutes(paramz.UpdateTimeOut);
+            //TODO: Get from prop.
+
+            foreach (var t in paramz.WorkerThreads)
+            {
+                t.Start();
+            }
+
+            while (paramz.WorkerThreads.FindAll(t => t.ThreadState != ThreadState.Stopped).Count > 0)
+            {
+                Thread.Sleep(5000);
+                if (DateTime.Now > timeout)
+                {
+                    paramz.Callback.Invoke(paramz.AddedItems, "Timed Out!");
+                    return;
+                }
+            }
+
+            paramz.Callback.Invoke(paramz.AddedItems, null);
+
         }
 
         private MTObservableCollection<string> messages = new MTObservableCollection<string>();
@@ -147,7 +179,7 @@ namespace Watcher.Core
                     addedItems.AddRange(results);
                 }
 
-                messages.Add(String.Format("Source: {0}, New Items: {1}", 
+                messages.Add(String.Format("Source: {0}, New Items: {1}",
                     s.GetDisplayName(), results == null ? 0 : results.Count));
             }
             catch (Exception e)
