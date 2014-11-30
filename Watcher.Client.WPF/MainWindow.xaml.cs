@@ -11,6 +11,8 @@ using Watcher.Core.Loaders;
 using Watcher.DataStore.SQLite;
 using System.Windows.Threading;
 using Innouvous.Utils;
+using Innouvous.Utils.DialogWindow;
+using Innouvous.Utils.DialogWindow.Windows;
 
 namespace Watcher.Client.WPF
 {
@@ -187,7 +189,7 @@ namespace Watcher.Client.WPF
             var opts = DialogControlOptions.SetTextBoxMessageOptions(
                 "Status", message , false, null);
 
-            var window = new SimpleDialogWindow(opts);
+            var window = new Innouvous.Utils.DialogWindow.Windows.SimpleDialogWindow(opts);
 
             window.ShowDialog();
         }

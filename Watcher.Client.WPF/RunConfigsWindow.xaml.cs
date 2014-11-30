@@ -1,4 +1,6 @@
-﻿using Microsoft.Win32;
+﻿using Innouvous.Utils.DialogWindow.Windows;
+using Innouvous.Utils.DialogWindow.Windows.Components;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,8 +23,9 @@ namespace Watcher.Client.WPF
     public partial class RunConfigsWindow : Window
     {
 
-        private readonly RunConfigsViewModel configsViewModel = new RunConfigsViewModel();
-    
+
+        private Properties.Settings AppConfig = Properties.Settings.Default;
+        
         public bool Cancelled
         { get; set; }
 
@@ -30,19 +33,80 @@ namespace Watcher.Client.WPF
         {
             get
             {
-                return String.IsNullOrEmpty(configsViewModel.DataStorePath)
-                    || String.IsNullOrEmpty(configsViewModel.ProvidersPath);
+                return String.IsNullOrEmpty(AppConfig.DataStoreFile)
+                    || String.IsNullOrEmpty(AppConfig.ProvidersPath);
             }
         }
+
+        private const string DataPath = "DataPath";
+        private const string ProvidersPath = "ProvidersPath";
+        private const string UpdateFrequency = "UpdateFrequency";
+        private const string UpdateTimeOut = "UpdateTimeOut";
 
         public RunConfigsWindow()
         {
             InitializeComponent();
 
-            this.DataContext = configsViewModel;
+            List<ComponentArgs> fields = new List<ComponentArgs>();
+            fields.Add(new ComponentArgs() { DisplayName = "Data File Path", 
+                ComponentType= ComponentFactory.Components.SaveFileSelector,
+                FieldName=DataPath,
+                InitialData=AppConfig.DataStoreFile,
+                CustomParameters = new Dictionary<string,object>()
+                {
+                    {PathSelectComponent.EXTENSION, PathSelectComponent.MakeExtension("SQLite DB", "*.sqlite")},
+                    {PathSelectComponent.CONFIRM_OVERWRITE, false}
+                }
+            });
+
+            fields.Add(new ComponentArgs()
+            {
+                DisplayName = "Providers Path",
+                ComponentType = ComponentFactory.Components.FolderSelector,
+                FieldName = ProvidersPath,
+                InitialData = AppConfig.ProvidersPath
+            });
+
+            fields.Add(new ComponentArgs()
+            {
+                DisplayName = "Update Frequency (min)",
+                ComponentType = ComponentFactory.Components.TextBox,
+                FieldName = UpdateFrequency,
+                InitialData = AppConfig.UpdateFrequency,
+                CustomParameters= new Dictionary<string,object>()
+                {
+                    {TextBoxComponent.MAX_LENGTH, 3}
+                }
+            });
+
+            fields.Add(new ComponentArgs()
+            {
+                DisplayName = "Update Timeout (min)",
+                ComponentType = ComponentFactory.Components.TextBox,
+                FieldName = UpdateTimeOut,
+                InitialData = AppConfig.UpdateTimeout,
+                CustomParameters = new Dictionary<string, object>()
+                {
+                    {TextBoxComponent.MAX_LENGTH, 3}
+                }
+            });
+
+            var options = DialogControlOptions.SetDataInputOptions(
+                null,
+                null,
+                fields);
+            DlgControl.SetupControl(options);
         }
 
-        private void PathSelectButton_Click(object sender, RoutedEventArgs e)
+        /*
+        public RunConfigsWindow()
+        {
+            InitializeComponent();
+
+            this.DataContext = configsViewModel;
+        }*/
+
+        /*private void PathSelectButton_Click(object sender, RoutedEventArgs e)
         {
             var sfd = new Microsoft.Win32.SaveFileDialog { AddExtension = true, CheckPathExists = true, DefaultExt = ".sqlite" };
 
@@ -50,34 +114,73 @@ namespace Watcher.Client.WPF
 
             if (sfdResult == true)
                 configsViewModel.DataStorePath = sfd.FileName;
-        }
+        }*/
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                configsViewModel.SaveConfigs();
+        
+                //configsViewModel.SaveConfigs();
+
+
+                var data = DlgControl.GetOptionsData();
+
+                foreach (KeyValuePair<string, object> kv in data)
+                {
+                    
+                    switch (kv.Key)
+                    {
+                        //TODO: Generic File/Folder/Path Checks
+                        case DataPath:
+                            new FileInfo(kv.Value.ToString());
+                            AppConfig.DataStoreFile = kv.Value.ToString();
+                            break;
+                        case ProvidersPath:
+                            new FileInfo(kv.Value.ToString());
+                            AppConfig.ProvidersPath = kv.Value.ToString();
+                            break;
+                        case UpdateFrequency:
+                            int val = Convert.ToInt32(kv.Value);
+                            AppConfig.UpdateFrequency = val;
+                            break;
+                        case UpdateTimeOut:
+                            int val2 = Convert.ToInt32(kv.Value);
+                            AppConfig.UpdateTimeout = val2;
+                            break;
+                        default:
+                            throw new Exception("Setting invalid");                            
+                    }
+                }
+
+                AppConfig.Save();
 
                 this.Close();
             }
             catch (Exception ex)
             {
-
                 Utils.ShowErrorMessage(this, ex);
             }
         }
 
-        private void ProvidersPathSelectButton_Click(object sender, RoutedEventArgs e)
+        /*private void ProvidersPathSelectButton_Click(object sender, RoutedEventArgs e)
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
             fbd.ShowDialog();
 
             configsViewModel.ProvidersPath = fbd.SelectedPath;
-        }
+        }*/
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
+            this.Cancelled = true;
             this.Close();
+        }
+
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Cancelled = false;
+            var data = DlgControl.GetOptionsData();
         }
 
     }

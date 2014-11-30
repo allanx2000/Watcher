@@ -28,7 +28,7 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ProductName>Watcher</ProductName>
     <PublisherName>innouvous Technologies</PublisherName>
-    <ApplicationRevision>9</ApplicationRevision>
+    <ApplicationRevision>10</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -107,9 +107,6 @@
     <Compile Include="SourceEditor.xaml.cs">
       <DependentUpon>SourceEditor.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SimpleDialogWindow.xaml.cs">
-      <DependentUpon>SimpleDialogWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Utils.cs" />
     <Compile Include="ViewModels\ItemViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
@@ -136,10 +133,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="SourceEditor.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="SimpleDialogWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -173,6 +166,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Innouvous.Utils\Innouvous.Utils.DialogWindow.Windows\Innouvous.Utils.DialogWindow.Windows.csproj">
+      <Project>{16e8c431-25d4-45eb-bf1f-386c99c88ec3}</Project>
+      <Name>Innouvous.Utils.DialogWindow.Windows</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Innouvous.Utils\Innouvous.Utils.DialogWindow\Innouvous.Utils.DialogWindow.csproj">
       <Project>{faf335ca-56b5-4770-8e70-4c37d23255f1}</Project>
       <Name>Innouvous.Utils.DialogWindow</Name>

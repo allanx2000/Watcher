@@ -25,6 +25,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innouvous.Utils.MessageBoxF
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innouvous.Utils.MVVM", "..\Innouvous.Utils\Innouvous.Utils.MVVM\Innouvous.Utils.MVVM.csproj", "{B90D1BD6-DB68-416C-9150-BA4E3C73A3F2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innouvous.Utils.Dialogs", "..\Innouvous.Utils\Innouvous.Utils.Dialogs\Innouvous.Utils.Dialogs.csproj", "{2B0E7F06-EDF2-4C54-A3BE-BD303186F9CB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innouvous.Utils.DialogWindow.Windows", "..\Innouvous.Utils\Innouvous.Utils.DialogWindow.Windows\Innouvous.Utils.DialogWindow.Windows.csproj", "{16E8C431-25D4-45EB-BF1F-386C99C88EC3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +79,14 @@ Global
 		{B90D1BD6-DB68-416C-9150-BA4E3C73A3F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B90D1BD6-DB68-416C-9150-BA4E3C73A3F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B90D1BD6-DB68-416C-9150-BA4E3C73A3F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B0E7F06-EDF2-4C54-A3BE-BD303186F9CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B0E7F06-EDF2-4C54-A3BE-BD303186F9CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B0E7F06-EDF2-4C54-A3BE-BD303186F9CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B0E7F06-EDF2-4C54-A3BE-BD303186F9CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16E8C431-25D4-45EB-BF1F-386C99C88EC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16E8C431-25D4-45EB-BF1F-386C99C88EC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16E8C431-25D4-45EB-BF1F-386C99C88EC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16E8C431-25D4-45EB-BF1F-386C99C88EC3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
