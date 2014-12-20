@@ -9,7 +9,6 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
-using Watcher.Core;
 using Watcher.Extensions;
 
 namespace Watcher.DataStore.SQLite
@@ -80,17 +79,17 @@ namespace Watcher.DataStore.SQLite
 
         private Dictionary<int, AbstractSource> sourceLookup = new Dictionary<int, AbstractSource>();
 
-        protected override List<AbstractSource> LoadSources()
+        protected override List<GenericSource> LoadSources()
         {
             string command = "select ID, ProviderID, Name, MetaData from " + SourcesTable;
 
             var results = sqlWrapper.ExecuteSelect(command);
 
-            List<AbstractSource> sources = new List<AbstractSource>();
+            List<GenericSource> sources = new List<GenericSource>();
 
             foreach (DataRow row in results.Rows)
             {
-                AbstractSource source = new GenericSource(row["Name"].ToString(), row["ProviderID"].ToString());
+                GenericSource source = new GenericSource(row["Name"].ToString(), row["ProviderID"].ToString());
                 source.SetID(Int32.Parse(row["ID"].ToString()));
                 source.SetMetaData(DeserializeMeta(row["MetaData"].ToString()));
 

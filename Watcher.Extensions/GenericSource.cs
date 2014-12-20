@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Watcher.Extensions;
 
-namespace Watcher.Core
+namespace Watcher.Extensions
 {
     public class GenericSource : AbstractSource
     {

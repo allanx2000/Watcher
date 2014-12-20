@@ -124,12 +124,19 @@ namespace Watcher.Extensions
             
         }
 
-        /*protected AbstractSource(string category, string providerId, int? id)
-            : this(category, providerId)
+        /// <summary>
+        /// Creates the source using the the GenericSource
+        /// </summary>
+        /// <param name="src">The Generic Source to get the parameters from</param>
+        protected AbstractSource(GenericSource src)
         {
-            ID = id;
-        }*/
+            if (src.ID.HasValue)
+                this.SetID(src.ID.Value);
 
+            this.SetProviderID(src.ProviderID);
+            this.SetSourceName(src.SourceName);
+            this.SetMetaData(src.GetMetaData());
+        }
 
         private Dictionary<string, string> MetaData = new Dictionary<string, string>();
 

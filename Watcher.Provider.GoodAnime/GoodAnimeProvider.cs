@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using Watcher.Core;
 using Watcher.Extensions;
 
 namespace Watcher.Provider.GoodAnime
@@ -25,7 +24,7 @@ namespace Watcher.Provider.GoodAnime
 
         }
 
-        public override AbstractSource CastSource(AbstractSource src)
+        public override AbstractSource CastSource(GenericSource src)
         {
             AbstractSource s = new GoodAnimeSource(src);
 

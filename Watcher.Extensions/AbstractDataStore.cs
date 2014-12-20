@@ -55,7 +55,7 @@ namespace Watcher.Extensions
         {
             Dictionary<string, AbstractProvider> providerLookup = providers.ToDictionary(p => p.GetProviderId());
 
-            List<AbstractSource> sources = LoadSources();
+            List<GenericSource> sources = LoadSources();
             
             List<int> sourceIds = new List<int>();
 
@@ -79,7 +79,7 @@ namespace Watcher.Extensions
             }
         }
 
-        protected abstract List<AbstractSource> LoadSources();
+        protected abstract List<GenericSource> LoadSources();
 
         protected abstract List<AbstractItem> LoadItems();
 

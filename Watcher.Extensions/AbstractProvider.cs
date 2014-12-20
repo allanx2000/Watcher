@@ -65,7 +65,7 @@ namespace Watcher.Extensions
             return source.ProviderID == this.providerId;
         }
 
-        public virtual AbstractSource CastSource(AbstractSource src)
+        public virtual AbstractSource CastSource(GenericSource src)
         {
             return src;
         }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Watcher.Core;
 using Watcher.Extensions;
 
 namespace Watcher.Provider.HundredZero
@@ -16,7 +15,7 @@ namespace Watcher.Provider.HundredZero
 
         }
 
-        public HundredZeroSource(AbstractSource src)
+        /*public HundredZeroSource(AbstractSource src)
             : this()
         {
             if (src.ID.HasValue)
@@ -25,7 +24,7 @@ namespace Watcher.Provider.HundredZero
             this.SetProviderID(src.ProviderID);
             this.SetSourceName(src.SourceName);
             this.SetMetaData(src.GetMetaData());
-        }
+        }*/
 
 
         public override string GetDisplayName()
