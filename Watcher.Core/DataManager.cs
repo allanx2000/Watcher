@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Watcher.Core.Internal;
 using Watcher.Core.Items;
+using Watcher.Extensions;
+using Watcher.Extensions.Internal;
 
 namespace Watcher.Core
 {
@@ -179,12 +180,13 @@ namespace Watcher.Core
                     addedItems.AddRange(results);
                 }
 
-                messages.Add(String.Format("Source: {0}, New Items: {1}",
+                AddMessage(String.Format("Source: {0}, New Items: {1}",
                     s.GetDisplayName(), results == null ? 0 : results.Count));
             }
             catch (Exception e)
             {
-
+                AddMessage(String.Format("Source: {0}, Error: {1}",
+                    s.GetDisplayName(), e.Message));
             }
         }
 

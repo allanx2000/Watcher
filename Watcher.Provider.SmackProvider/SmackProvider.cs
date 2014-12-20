@@ -9,7 +9,7 @@ using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using Watcher.Core;
-using Watcher.Core.Items;
+using Watcher.Extensions;
 
 namespace Watcher.Provider.Smack
 {

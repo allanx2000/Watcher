@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{96FD1098-F58E-4C31-8663-EF877AE0BB35}</ProjectGuid>
+    <ProjectGuid>{A5CE8509-0AF8-4E14-B50A-3F7E2E1BDE64}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Smack</RootNamespace>
-    <AssemblyName>Watcher.Provider.Smack</AssemblyName>
+    <RootNamespace>Watcher.Extensions</RootNamespace>
+    <AssemblyName>Watcher.Extensions</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
@@ -31,10 +31,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="HtmlAgilityPack, Version=1.4.6.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Lib\HtmlAgility\Net40-client\HtmlAgilityPack.dll</HintPath>
-    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -42,16 +40,20 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SmackProvider.cs" />
+    <Compile Include="AbstractDataStore.cs" />
+    <Compile Include="AbstractItem.cs" />
+    <Compile Include="AbstractProvider.cs" />
+    <Compile Include="AbstractSource.cs" />
+    <Compile Include="GenericSource.cs" />
+    <Compile Include="Internal\MTObservableCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SourceOptions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Watcher.Extensions\Watcher.Extensions.csproj">
-      <Project>{a5ce8509-0af8-4e14-b50a-3f7e2e1bde64}</Project>
-      <Name>Watcher.Extensions</Name>
-    </ProjectReference>
+    <None Include="Readme.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

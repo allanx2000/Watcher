@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
+using Watcher.Extensions;
 
 namespace Watcher.Core.Loaders
 {

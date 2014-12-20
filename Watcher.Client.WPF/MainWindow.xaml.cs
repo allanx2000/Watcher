@@ -13,6 +13,7 @@ using System.Windows.Threading;
 using Innouvous.Utils;
 using Innouvous.Utils.DialogWindow;
 using Innouvous.Utils.DialogWindow.Windows;
+using Watcher.Extensions;
 
 namespace Watcher.Client.WPF
 {
@@ -53,37 +54,42 @@ namespace Watcher.Client.WPF
             timer.Start();
         }
 
+
         public MainWindow()
         {
 
             InitializeComponent();
 
-            try
+            //Loads the window with default configurations
+            RunConfigsWindow cf = new RunConfigsWindow();
+
+            while (true)
             {
-                //Loads the window with default configurations
-                RunConfigsWindow cf = new RunConfigsWindow();
-                
-                if (cf.IsFirstRun)
+                try
                 {
-                    cf.ShowDialog();
 
-                    if (cf.Cancelled)
+                    if (cf.IsFirstRun || cf.Retry)
                     {
-                        throw new Exception("Settings not configured");
+                        cf.ShowDialog();
                     }
+
+                    LoadFromConfigurations();
+                    cf.Retry = false;
+
+                    viewModel.DoUpdate();
+
+                    break;
                 }
+                catch (Exception e)
+                {
+                    var result = MessageBox.Show(e.Message + " Retry?", "Error Loading DB", MessageBoxButton.YesNo);
 
-                LoadFromConfigurations();
-
+                    if (result == MessageBoxResult.No)
+                        Application.Current.Shutdown(0);
+                    else
+                        cf.Retry = true; 
+                }
             }
-            catch (Exception e)
-           { 
-                MessageBox.Show(e.Message);
-
-                Application.Current.Shutdown(0);
-            }
-
-            viewModel.DoUpdate();
 
         }
 
@@ -138,7 +144,7 @@ namespace Watcher.Client.WPF
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            if (viewModel.IsUpdating)
+            if (viewModel != null && viewModel.IsUpdating)
             {
                 e.Cancel = true;
             }
@@ -186,10 +192,10 @@ namespace Watcher.Client.WPF
         {
             string message = String.Join("\r\n", DataManager.Instance().Messages);
 
-            var opts = DialogControlOptions.SetTextBoxMessageOptions(
-                "Status", message , false, null);
+            var opts = DialogControlOptions.SetTextBoxMessageOptions(message, false);
 
             var window = new Innouvous.Utils.DialogWindow.Windows.SimpleDialogWindow(opts);
+            window.Title = "Status";
 
             window.ShowDialog();
         }

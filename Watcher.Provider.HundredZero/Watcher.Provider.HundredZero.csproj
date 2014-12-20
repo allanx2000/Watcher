@@ -43,14 +43,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Book.cs" />
     <Compile Include="HundredZeroProvider.cs" />
     <Compile Include="HundredZeroSource.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Watcher.Core\Watcher.Core.csproj">
-      <Project>{fd7e4abc-e1ce-498a-9d76-f0707d65a0c5}</Project>
-      <Name>Watcher.Core</Name>
+    <ProjectReference Include="..\Watcher.Extensions\Watcher.Extensions.csproj">
+      <Project>{a5ce8509-0af8-4e14-b50a-3f7e2e1bde64}</Project>
+      <Name>Watcher.Extensions</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

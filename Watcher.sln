@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watcher.Core", "Watcher.Core\Watcher.Core.csproj", "{FD7E4ABC-E1CE-498A-9D76-F0707D65A0C5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{919CCA5E-ED64-4519-9396-09E7540E1ED4}"
@@ -12,8 +14,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watcher.Provider.GoodAnime", "Watcher.Provider.GoodAnime\Watcher.Provider.GoodAnime.csproj", "{5A76BD8B-6591-4F74-A862-7CBD447AF46E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watcher.DataStore.SQLite", "Watcher.DataStore.SQLite\Watcher.DataStore.SQLite.csproj", "{4450DF14-2A10-4054-B56C-724DC163FE53}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watcher.Provider.SVHao", "Watcher.Provider.SVHao\Watcher.Provider.SVHao.csproj", "{2959D3D9-3BEF-4206-99A8-709E49845A47}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innouvous.Utils.Data.SQLiteWrapper", "..\Innouvous.Utils\Innouvous.Utils.SQLiteWrapper\Innouvous.Utils.Data.SQLiteWrapper.csproj", "{183BD0E1-5F1E-45E3-8BE9-34D9B64A5B99}"
 EndProject
@@ -28,6 +28,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innouvous.Utils.Dialogs", "..\Innouvous.Utils\Innouvous.Utils.Dialogs\Innouvous.Utils.Dialogs.csproj", "{2B0E7F06-EDF2-4C54-A3BE-BD303186F9CB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innouvous.Utils.DialogWindow.Windows", "..\Innouvous.Utils\Innouvous.Utils.DialogWindow.Windows\Innouvous.Utils.DialogWindow.Windows.csproj", "{16E8C431-25D4-45EB-BF1F-386C99C88EC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innouvous.Utils.ResourceDictionaries", "..\Innouvous.Utils\Innouvous.Utils.ResourceDictionaries\Innouvous.Utils.ResourceDictionaries.csproj", "{8F93514E-288C-4852-ACC6-E6DFD2BC9407}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watcher.Extensions", "Watcher.Extensions\Watcher.Extensions.csproj", "{A5CE8509-0AF8-4E14-B50A-3F7E2E1BDE64}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,10 +59,6 @@ Global
 		{4450DF14-2A10-4054-B56C-724DC163FE53}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4450DF14-2A10-4054-B56C-724DC163FE53}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4450DF14-2A10-4054-B56C-724DC163FE53}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2959D3D9-3BEF-4206-99A8-709E49845A47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2959D3D9-3BEF-4206-99A8-709E49845A47}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2959D3D9-3BEF-4206-99A8-709E49845A47}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2959D3D9-3BEF-4206-99A8-709E49845A47}.Release|Any CPU.Build.0 = Release|Any CPU
 		{183BD0E1-5F1E-45E3-8BE9-34D9B64A5B99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{183BD0E1-5F1E-45E3-8BE9-34D9B64A5B99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{183BD0E1-5F1E-45E3-8BE9-34D9B64A5B99}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -87,6 +87,14 @@ Global
 		{16E8C431-25D4-45EB-BF1F-386C99C88EC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{16E8C431-25D4-45EB-BF1F-386C99C88EC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{16E8C431-25D4-45EB-BF1F-386C99C88EC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F93514E-288C-4852-ACC6-E6DFD2BC9407}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F93514E-288C-4852-ACC6-E6DFD2BC9407}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F93514E-288C-4852-ACC6-E6DFD2BC9407}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F93514E-288C-4852-ACC6-E6DFD2BC9407}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5CE8509-0AF8-4E14-B50A-3F7E2E1BDE64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5CE8509-0AF8-4E14-B50A-3F7E2E1BDE64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5CE8509-0AF8-4E14-B50A-3F7E2E1BDE64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5CE8509-0AF8-4E14-B50A-3F7E2E1BDE64}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

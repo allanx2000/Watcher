@@ -50,22 +50,20 @@
   <ItemGroup>
     <Compile Include="Loaders\ExtensionsLoader.cs" />
     <Compile Include="Sources\GenericSource.cs" />
-    <Compile Include="Items\AbstractItem.cs" />
-    <Compile Include="AbstractProvider.cs" />
     <Compile Include="Items\Book.cs" />
     <Compile Include="DataManager.cs" />
-    <Compile Include="AbstractDataStore.cs" />
     <Compile Include="Items\Show.cs" />
-    <Compile Include="Internal\MTObservableCollection.cs" />
-    <Compile Include="Internal\ObservableClass.cs" />
     <Compile Include="Loaders\AbstractDLLLoader.cs" />
     <Compile Include="Loaders\IProviderLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sources\AbstractSource.cs" />
     <Compile Include="Loaders\ProvidersLoader.cs" />
-    <Compile Include="Sources\SourceOptions.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Watcher.Extensions\Watcher.Extensions.csproj">
+      <Project>{a5ce8509-0af8-4e14-b50a-3f7e2e1bde64}</Project>
+      <Name>Watcher.Extensions</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -7,7 +7,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using Watcher.Client.WPF.ViewModels;
-using Watcher.Core.Internal;
+using Innouvous.Utils.MVVM;
+using Watcher.Extensions;
 
 namespace Watcher.Client.WPF
 {

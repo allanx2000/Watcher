@@ -91,10 +91,7 @@ namespace Watcher.Client.WPF
                 }
             });
 
-            var options = DialogControlOptions.SetDataInputOptions(
-                null,
-                null,
-                fields);
+            var options = DialogControlOptions.SetDataInputOptions(fields);
             DlgControl.SetupControl(options);
         }
 
@@ -183,5 +180,7 @@ namespace Watcher.Client.WPF
             var data = DlgControl.GetOptionsData();
         }
 
+
+        public bool Retry { get; set; }
     }
 }

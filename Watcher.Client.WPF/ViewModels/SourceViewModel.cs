@@ -1,6 +1,7 @@
 ﻿using Innouvous.Utils.MVVM;
 using System.Windows.Media;
 using Watcher.Core;
+using Watcher.Extensions;
 
 namespace Watcher.Client.WPF.ViewModels
 {

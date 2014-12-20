@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Media;
-using Watcher.Core.Internal;
 
-namespace Watcher.Core
+namespace Watcher.Extensions
 {
 
     public abstract class AbstractSource

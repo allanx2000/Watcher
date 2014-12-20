@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Windows.Forms.VisualStyles;
-using Watcher.Core.Items;
 using Watcher.Extensions;
 using Watcher.Extensions.Internal;
 
-namespace Watcher.Core
+namespace Watcher.Extensions
 {
     public abstract class AbstractDataStore
     {

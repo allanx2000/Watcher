@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using Watcher.Core;
-using Watcher.Core.Items;
+using Watcher.Extensions;
 
 namespace Watcher.Provider.GoodAnime
 {

@@ -12,8 +12,8 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="2*"/>
         </Grid.RowDefinitions>
         
         <Menu Grid.Row="0" Padding="0 5" >
@@ -25,7 +25,7 @@
         <GroupBox Grid.Row="1" DockPanel.Dock="Top" Name="SourcesGroupBox" Header="Sources">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="100"/>
+                    <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <ListBox Grid.Row="0" ItemsSource="{Binding Sources}"  SelectedItem="{Binding SelectedSource}" Name="SourcesListBox" >
@@ -47,12 +47,27 @@
         <GroupBox Grid.Row="2" Header="Updates" VerticalAlignment="Stretch">
             <Grid>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
+                
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <Label Grid.Column="0">Filter:</Label>
+                    <TextBox Grid.Column="1" Text="{Binding SearchFilter}"/>
+                    <Button Command="{Binding SearchCommand}" Grid.Column="2">Search</Button>
+                    <Button Grid.Column="3" Command="{Binding ClearCommand}">Clear</Button>
+                </Grid>
 
-                <ListBox Grid.Row="0" Name="ItemsListBox" MinHeight="250" VerticalAlignment="Stretch" SelectionMode="Extended" ItemsSource="{Binding SortedView}" ScrollViewer.VerticalScrollBarVisibility="Auto" SelectedItem="{Binding SelectedItem}" MouseDoubleClick="ItemsListBox_MouseDoubleClick">
+                <ListBox Grid.Row="1" Name="ItemsListBox" MinHeight="250" VerticalAlignment="Stretch" SelectionMode="Extended" ItemsSource="{Binding SortedView}" ScrollViewer.VerticalScrollBarVisibility="Auto" SelectedItem="{Binding SelectedItem}" MouseDoubleClick="ItemsListBox_MouseDoubleClick">
                     <ListBox.ItemTemplate>
                         <DataTemplate DataType="viewModels:ItemViewModel">
                             <StackPanel>
@@ -70,7 +85,7 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
 
-                <Grid Grid.Row="1" Margin="0 6">
+                <Grid Grid.Row="2" Margin="0 6">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*" />
@@ -85,15 +100,18 @@
                                TextDecorations="Underline"/>
                         </Label>
                     </StackPanel>
+
+                    
                     <CheckBox Name="ShowAllCheckBox" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding ShowAll}" >Show All</CheckBox>
                 </Grid>
-                
-                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+
+                <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button Name="UpdateItemButton" Command="{Binding UpdateCommand}" IsEnabled="{Binding UpdateButtonsEnabled}" >Update</Button>
                     <Button Name="MarkSelectedButton" IsEnabled="{Binding UpdateButtonsEnabled}" Click="MarkSelectedButton_Click">Mark _Selected As Read</Button>
                     <Button Name="MarkAllButton" IsEnabled="{Binding UpdateButtonsEnabled}" Click="MarkAllButton_OnClick">Mark _All As Read</Button>
-
                 </StackPanel>
+
+
 
             </Grid>
         </GroupBox>

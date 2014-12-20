@@ -1,7 +1,7 @@
 ﻿using System;
 using Watcher.Extensions;
 
-namespace Watcher.Core.Items
+namespace Watcher.Provider.GoodAnime
 {
     public class Show : AbstractItem
     {

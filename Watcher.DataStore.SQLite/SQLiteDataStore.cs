@@ -10,7 +10,7 @@ using System.Runtime.Serialization;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using Watcher.Core;
-using Watcher.Core.Items;
+using Watcher.Extensions;
 
 namespace Watcher.DataStore.SQLite
 {
@@ -107,20 +107,27 @@ namespace Watcher.DataStore.SQLite
 
         protected override List<AbstractItem> LoadItems()
         {
-            List<AbstractItem> items = new List<AbstractItem>();
-
+            
             string evictString = SQLUtils.ToSQLDateTime(EvictCutOff);
 
             string command = LoadCommandFT("SelectDefaultItems", ItemsTable, evictString);
 
             DataTable results = sqlWrapper.ExecuteSelect(command);
 
+            List<AbstractItem> items = LoadItemsFromTable(results);
+
+
+            return items;
+        }
+
+        private List<AbstractItem> LoadItemsFromTable(DataTable results)
+        {
+            List<AbstractItem> items = new List<AbstractItem>();
+
             foreach (DataRow r in results.Rows)
             {
                 try
                 {
-
-
                     int id = Convert.ToInt32(r["ID"]);
                     string name = r["Name"].ToString();
                     int srcId = Convert.ToInt32(r["SourceID"]);
@@ -138,8 +145,9 @@ namespace Watcher.DataStore.SQLite
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
-                    //Log
+                    //Console.WriteLine(e.Message);
+
+                    throw e;
                 }
             }
 
@@ -244,6 +252,14 @@ namespace Watcher.DataStore.SQLite
             sqlWrapper.ExecuteNonQuery(command);
 
 
+        }
+
+        public override List<AbstractItem> Search(string filter)
+        {
+            string sql = "select * from {0} where Name LIKE '%{1}%'";
+            sql = String.Format(sql, ItemsTable, filter);
+
+            return LoadItemsFromTable(sqlWrapper.ExecuteSelect(sql));
         }
     }
 }

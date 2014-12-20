@@ -7,10 +7,11 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using Watcher.Core;
-using Watcher.Core.Internal;
 using Watcher.Core.Items;
 using System.Linq;
 using System.Collections.Specialized;
+using Watcher.Extensions;
+using Watcher.Extensions.Internal;
 
 namespace Watcher.Client.WPF.ViewModels
 {
@@ -112,6 +113,24 @@ namespace Watcher.Client.WPF.ViewModels
             }
         }
 
+        private string searchFilterLower;
+        private string searchFilter;
+
+        public string SearchFilter
+        {
+            get
+            {
+                return searchFilter;
+            }
+            set
+            {
+                searchFilter = value;
+                searchFilterLower = value == null? null : value.ToLower();
+
+                RaisePropertyChanged("SearchFilter");
+            }
+        }
+
         public string LatestUpdateMessage { get; private set; }
         public string LastUpdatedString
         {
@@ -149,6 +168,43 @@ namespace Watcher.Client.WPF.ViewModels
                 SortedView.Refresh();
                 RaisePropertyChanged("SortedView");
             }
+        }
+
+        public ICommand SearchCommand
+        {
+            get
+            {
+                return new CommandHelper(DoSearch);
+            }
+        }
+
+        public ICommand ClearCommand
+        {
+            get
+            {
+                return new CommandHelper(ClearSearch);
+            }
+        }
+
+        public void ClearSearch()
+        {
+            SearchFilter = null;
+            LoadDefaultItems();
+        }
+
+        private void DoSearch()
+        {
+            items.Clear();
+
+            List<AbstractItem> results = DataManager.Instance().DataStore.Search(SearchFilter);
+            
+            foreach (var i in results)
+            {
+                Items.Add(new ItemViewModel(i, SVMLookup[i.GetSource()]));
+            }
+            
+            SortedView.Refresh();
+            RefreshViewModel();
         }
 
 
@@ -360,13 +416,13 @@ namespace Watcher.Client.WPF.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    Console.Write(ex.Message);
+                    DataManager.Instance().AddMessage(ex.Message);
                 }
             }
 
             //show errors
-            if (error != null)
-                MessageBox.Show(error);
+            /*if (error != null)
+                MessageBox.Show(error);*/
         }
 
         private void UpdateItemButton_Click(object sender, RoutedEventArgs e)
@@ -386,9 +442,16 @@ namespace Watcher.Client.WPF.ViewModels
         public MainWindowViewModel()
         {
             var sources = DataManager.Instance().DataStore.Sources;
-            var items = DataManager.Instance().DataStore.Items;
             
             PopulateSVMLookup(sources);
+
+            DataManager.Instance().Messages.CollectionChanged += Messages_CollectionChanged;
+
+            LoadDefaultItems();
+        }
+        private void LoadDefaultItems()
+        {
+            var items = DataManager.Instance().DataStore.Items;
 
             foreach (var i in items)
             {
@@ -396,8 +459,6 @@ namespace Watcher.Client.WPF.ViewModels
             }
 
             CreateSortedItemsView();
-
-            DataManager.Instance().Messages.CollectionChanged += Messages_CollectionChanged;
         }
 
         private void Messages_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -418,24 +479,40 @@ namespace Watcher.Client.WPF.ViewModels
 
             sortedView.Source = Items;
 
-            sortedView.SortDescriptions.Add(new SortDescription("AddedDate", ListSortDirection.Descending));
-            sortedView.SortDescriptions.Add(new SortDescription("SourceName", ListSortDirection.Descending));
+            //First to Last
             sortedView.SortDescriptions.Add(new SortDescription("NewLabel", ListSortDirection.Descending));
-
+            sortedView.SortDescriptions.Add(new SortDescription("AddedDate", ListSortDirection.Descending));
+            sortedView.SortDescriptions.Add(new SortDescription("SourceName", ListSortDirection.Ascending));
+            sortedView.SortDescriptions.Add(new SortDescription("Title", ListSortDirection.Ascending));
+            
             RaisePropertyChanged("SortedView");
         }
 
         void DoFilter(object sender, FilterEventArgs e)
         {
-            if (!ShowAll)
-            {
-                var item = e.Item as ItemViewModel;
+            
+            var item = e.Item as ItemViewModel;
 
-                if (item != null && !item.Data.New)
+            if (item != null)
+            {
+
+            if (!String.IsNullOrEmpty(SearchFilter))
+            {
+                if (!item.Title.ToLower().Contains(searchFilterLower))
                 {
                     e.Accepted = false;
                     return;
                 }
+            }
+
+            if (!ShowAll)
+            {
+                if (!item.Data.New)
+                {
+                    e.Accepted = false;
+                    return;
+                }
+            }
             }
 
             e.Accepted = true;

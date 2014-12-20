@@ -66,7 +66,7 @@
     <GenerateManifests>true</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Watcher.ico</ApplicationIcon>
@@ -88,7 +88,7 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="Xceed.Wpf.Toolkit">
-      <HintPath>..\..\..\..\Visual Studio 2010\Libraries\estendedWPF\Xceed.Wpf.Toolkit.dll</HintPath>
+      <HintPath>..\..\..\Lib\extendedWPF\Xceed.Wpf.Toolkit.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -182,6 +182,10 @@
       <Project>{b90d1bd6-db68-416c-9150-ba4e3c73a3f2}</Project>
       <Name>Innouvous.Utils.MVVM</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Innouvous.Utils\Innouvous.Utils.ResourceDictionaries\Innouvous.Utils.ResourceDictionaries.csproj">
+      <Project>{8f93514e-288c-4852-acc6-e6dfd2bc9407}</Project>
+      <Name>Innouvous.Utils.ResourceDictionaries</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Watcher.Core\Watcher.Core.csproj">
       <Project>{fd7e4abc-e1ce-498a-9d76-f0707d65a0c5}</Project>
       <Name>Watcher.Core</Name>
@@ -189,6 +193,10 @@
     <ProjectReference Include="..\Watcher.DataStore.SQLite\Watcher.DataStore.SQLite.csproj">
       <Project>{4450df14-2a10-4054-b56c-724dc163fe53}</Project>
       <Name>Watcher.DataStore.SQLite</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Watcher.Extensions\Watcher.Extensions.csproj">
+      <Project>{a5ce8509-0af8-4e14-b50a-3f7e2e1bde64}</Project>
+      <Name>Watcher.Extensions</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
