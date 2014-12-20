@@ -42,7 +42,7 @@ namespace Watcher.Provider.HundredZero
             if (!metaData.ContainsKey(META_URL) || !metaData[META_URL].StartsWith(BASE_URL))
                 throw new Exception("Invalid URL");
 
-            AbstractSource s = new GenericSource(name, PROVIDER);
+            AbstractSource s = new HundredZeroSource();
 
             s.AddMetaData(META_URL, metaData[META_URL]);
             s.AddMetaData(META_MAX_PAGES, metaData[META_MAX_PAGES]);

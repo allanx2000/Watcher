@@ -135,9 +135,9 @@ namespace Watcher.Core
                 t.Start();
             }
 
-            while (paramz.WorkerThreads.FindAll(t => t.ThreadState != ThreadState.Stopped).Count > 0)
+            while (ThreadsRunning(paramz.WorkerThreads) > 0)
             {
-                Thread.Sleep(5000);
+                Thread.Sleep(2000);
                 if (DateTime.Now > timeout)
                 {
                     paramz.Callback.Invoke(paramz.AddedItems, "Timed Out!");
@@ -147,6 +147,13 @@ namespace Watcher.Core
 
             paramz.Callback.Invoke(paramz.AddedItems, null);
 
+        }
+
+        private int ThreadsRunning(List<Thread> threads)
+        {
+            int count = threads.FindAll(t => t.ThreadState != ThreadState.Stopped).Count;
+
+            return count;
         }
 
         private MTObservableCollection<string> messages = new MTObservableCollection<string>();

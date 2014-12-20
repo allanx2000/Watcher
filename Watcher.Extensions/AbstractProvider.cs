@@ -6,9 +6,9 @@ namespace Watcher.Extensions
     {
         private readonly string providerId;
 
-        protected AbstractProvider(string sourceId)
+        protected AbstractProvider(string providerId)
         {
-            this.providerId = sourceId;
+            this.providerId = providerId;
         }
 
         public string ProviderId

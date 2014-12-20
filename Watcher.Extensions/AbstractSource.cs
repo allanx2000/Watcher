@@ -117,6 +117,11 @@ namespace Watcher.Extensions
             return ProviderID + " > " + SourceName;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sourceName">This is used for serialization, it is a key that identifies the type of source; it can also be a friendly-name</param>
+        /// <param name="providerId">The provider's key</param>
         protected AbstractSource(string sourceName, string providerId)
         {
             ProviderID = providerId;

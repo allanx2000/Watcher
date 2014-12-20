@@ -11,7 +11,6 @@ namespace Watcher.Extensions
     {
         private readonly string type;
 
-        //TODO: Need to make into MTCollection
         private ObservableCollection<AbstractSource> sources = new MTObservableCollection<AbstractSource>();
         private ObservableCollection<AbstractItem> items = new MTObservableCollection<AbstractItem>();
 

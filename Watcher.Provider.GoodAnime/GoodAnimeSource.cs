@@ -20,9 +20,6 @@ namespace Watcher.Provider.GoodAnime
 
         }
 
-        
-
-
         public override string GetDisplayName()
         {
             return SourceName;

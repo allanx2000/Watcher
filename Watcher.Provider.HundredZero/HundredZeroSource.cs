@@ -15,17 +15,6 @@ namespace Watcher.Provider.HundredZero
 
         }
 
-        /*public HundredZeroSource(AbstractSource src)
-            : this()
-        {
-            if (src.ID.HasValue)
-                this.SetID(src.ID.Value);
-            
-            this.SetProviderID(src.ProviderID);
-            this.SetSourceName(src.SourceName);
-            this.SetMetaData(src.GetMetaData());
-        }*/
-
 
         public override string GetDisplayName()
         {
