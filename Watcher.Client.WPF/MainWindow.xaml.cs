@@ -82,7 +82,10 @@ namespace Watcher.Client.WPF
                 }
                 catch (Exception e)
                 {
-                    var result = MessageBox.Show(e.Message + " Retry?", "Error Loading DB", MessageBoxButton.YesNo);
+                    var result = MessageBox.Show(
+                        "Error occured while initializing program: " + e.Message + ". Do you want to modify the configurations?", 
+                        "Error Loading Configurations", 
+                        MessageBoxButton.YesNo);
 
                     if (result == MessageBoxResult.No)
                         Application.Current.Shutdown(0);

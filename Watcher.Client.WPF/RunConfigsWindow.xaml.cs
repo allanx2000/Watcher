@@ -22,8 +22,6 @@ namespace Watcher.Client.WPF
     /// </summary>
     public partial class RunConfigsWindow : Window
     {
-
-
         private Properties.Settings AppConfig = Properties.Settings.Default;
         
         public bool Cancelled
@@ -47,71 +45,43 @@ namespace Watcher.Client.WPF
         {
             InitializeComponent();
 
-            List<ComponentArgs> fields = new List<ComponentArgs>();
-            fields.Add(new ComponentArgs() { DisplayName = "Data File Path", 
-                ComponentType= ComponentFactory.Components.SaveFileSelector,
-                FieldName=DataPath,
-                InitialData=AppConfig.DataStoreFile,
-                CustomParameters = new Dictionary<string,object>()
-                {
-                    {PathSelectComponent.EXTENSION, PathSelectComponent.MakeExtension("SQLite DB", "*.sqlite")},
-                    {PathSelectComponent.CONFIRM_OVERWRITE, false}
-                }
-            });
-
-            fields.Add(new ComponentArgs()
+            List<ValueComponent> fields = new List<ValueComponent>()
             {
-                DisplayName = "Providers Path",
-                ComponentType = ComponentFactory.Components.FolderSelector,
-                FieldName = ProvidersPath,
-                InitialData = AppConfig.ProvidersPath
-            });
-
-            fields.Add(new ComponentArgs()
-            {
-                DisplayName = "Update Frequency (min)",
-                ComponentType = ComponentFactory.Components.TextBox,
-                FieldName = UpdateFrequency,
-                InitialData = AppConfig.UpdateFrequency,
-                CustomParameters= new Dictionary<string,object>()
-                {
-                    {TextBoxComponent.MAX_LENGTH, 3}
-                }
-            });
-
-            fields.Add(new ComponentArgs()
-            {
-                DisplayName = "Update Timeout (min)",
-                ComponentType = ComponentFactory.Components.TextBox,
-                FieldName = UpdateTimeOut,
-                InitialData = AppConfig.UpdateTimeout,
-                CustomParameters = new Dictionary<string, object>()
-                {
-                    {TextBoxComponent.MAX_LENGTH, 3}
-                }
-            });
+                PathSelectComponent.SaveFileComponent(
+                    new ComponentArgs() 
+                    { 
+                        DisplayName = "Data File Path", 
+                        FieldName=DataPath,
+                        InitialData=AppConfig.DataStoreFile,
+                    }, 
+                    ext: PathSelectComponent.MakeExtension("SQLite DB", "*.sqlite"), 
+                    confirmOverwrite: false),
+                PathSelectComponent.SelectFolderComponent(
+                    new ComponentArgs()
+                    {
+                        DisplayName = "Providers Path",
+                        FieldName = ProvidersPath,
+                        InitialData = AppConfig.ProvidersPath
+                    }),
+                new TextBoxComponent(
+                    new ComponentArgs()
+                    {
+                        DisplayName = "Update Frequency (min)",
+                        FieldName = UpdateFrequency,
+                        InitialData = AppConfig.UpdateFrequency
+                    }, maxLength: 3),
+                new TextBoxComponent(    
+                    new ComponentArgs()
+                    {
+                        DisplayName = "Update Timeout (min)",
+                        FieldName = UpdateTimeOut,
+                        InitialData = AppConfig.UpdateTimeout
+                    }, TextBoxComponent.FieldType.Integer, 3)
+            };
 
             var options = DialogControlOptions.SetDataInputOptions(fields);
             DlgControl.SetupControl(options);
         }
-
-        /*
-        public RunConfigsWindow()
-        {
-            InitializeComponent();
-
-            this.DataContext = configsViewModel;
-        }*/
-
-        /*private void PathSelectButton_Click(object sender, RoutedEventArgs e)
-        {
-            var sfd = new Microsoft.Win32.SaveFileDialog { AddExtension = true, CheckPathExists = true, DefaultExt = ".sqlite" };
-
-            var sfdResult = sfd.ShowDialog();
-
-            if (sfdResult == true)
-                configsViewModel.DataStorePath = sfd.FileName;
-        }*/
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
