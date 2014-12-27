@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Watcher.Client.WPF.SourceEditor"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="SourceEditor" Height="369.155" Width="300">
+        Title="Source Editor" Height="369.155" Width="300">
     
     <Window.Resources>
         <Style x:Key="FieldLabel" TargetType="Label">

@@ -8,7 +8,7 @@ using System.Windows;
 [assembly: AssemblyTitle("Watcher")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("innouvous Technologies")]
 [assembly: AssemblyProduct("Watcher")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
