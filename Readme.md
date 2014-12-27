@@ -1,7 +1,7 @@
 # Watcher #
 WPF Client, core and extensions framework for monitoring various data sources for updates.
 
-**Targets:** NET 4.0, x86 (due to SQLite)
+**Targets:** NET 4.0, x86
 
 Will configure project to multi-target in the future.
 
@@ -19,3 +19,5 @@ Will configure project to multi-target in the future.
 Use **Watcher.Extensions** to build you own extensions. 
 
 See **Watcher.Provider.*** for usage code.
+
+Dependency DLLs should be packaged along with the extension DLL.
