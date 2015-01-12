@@ -455,7 +455,10 @@ namespace Watcher.Client.WPF.ViewModels
 
             foreach (var i in items)
             {
-                this.items.Add(new ItemViewModel(i, SVMLookup[i.GetSource()]));
+                if (i != null)
+                {
+                    this.items.Add(new ItemViewModel(i, SVMLookup[i.GetSource()]));
+                }
             }
 
             CreateSortedItemsView();
