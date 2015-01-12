@@ -39,44 +39,16 @@ namespace Watcher.Provider.HundredZero
         protected override AbstractSource DoCreateNewSource(string name, string url, Dictionary<string, string> metaData)
         {
             
-            if (!metaData.ContainsKey(META_URL) || !metaData[META_URL].StartsWith(BASE_URL))
+                if (!metaData.ContainsKey(META_URL) || !metaData[META_URL].StartsWith(BASE_URL))
                 throw new Exception("Invalid URL");
 
-            AbstractSource s = new HundredZeroSource();
+            AbstractSource s = new HundredZeroSource(name);
 
             s.AddMetaData(META_URL, metaData[META_URL]);
             s.AddMetaData(META_MAX_PAGES, metaData[META_MAX_PAGES]);
 
             return s;
         }
-
-        /*public override AbstractSource CastSource(AbstractSource src)
-        {
-            AbstractSource s = new  GoodAnimeSource(src);
-
-            return s;
-        }*/
-
-        /*protected override AbstractSource DoCreateNewSource(string name, string url, Dictionary<string, string> metaData)
-        {
-            AbstractSource s = new GoodAnimeSource();
-
-            return s;
-        }*/
-
-        /*private List<string> GetExclusions(AbstractSource source)
-        {
-            List<string> exclude = new List<string>();
-
-            string exclusionString = source.GetMetaDataValue(META_EXCLUSIONS);
-            if (!String.IsNullOrEmpty(exclusionString))
-            {
-                exclude.AddRange(from s in exclusionString.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                                 select s.Trim());
-            }
-
-            return exclude;
-        }*/
 
         protected override List<AbstractItem> GetNewItems(AbstractSource source)
         {
@@ -104,9 +76,7 @@ namespace Watcher.Provider.HundredZero
             }
             else return null;
         }
-
-
-
+                
         private List<Book> GetBooksOnPage(AbstractSource source, string baseUrl, int page)
         {
             List<Book> books = new List<Book>();

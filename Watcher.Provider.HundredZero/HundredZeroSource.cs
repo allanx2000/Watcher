@@ -9,8 +9,8 @@ namespace Watcher.Provider.HundredZero
 {
     class HundredZeroSource : AbstractSource
     {        
-        public HundredZeroSource() 
-            : base("HundredZero", HundredZeroProvider.PROVIDER)
+        public HundredZeroSource(string name)
+            : base(name, HundredZeroProvider.PROVIDER)
         {
 
         }
