@@ -132,6 +132,16 @@ namespace Watcher.Extensions
         public void UpdateSource(AbstractSource source)
         {
             DoUpdateSource(source);
+
+            //Copy changes to active source
+
+            var existing = Sources.FirstOrDefault(x => x.ID == source.ID);
+
+            if (existing != null)
+            {
+                source.CopyTo(existing);
+            }
+
         }
 
         protected abstract void DoUpdateSource(AbstractSource source);

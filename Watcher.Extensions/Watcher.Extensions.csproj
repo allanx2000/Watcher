@@ -47,6 +47,7 @@
     <Compile Include="AbstractItem.cs" />
     <Compile Include="AbstractProvider.cs" />
     <Compile Include="AbstractSource.cs" />
+    <Compile Include="BasicItem.cs" />
     <Compile Include="GenericSource.cs" />
     <Compile Include="Internal\MTObservableCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
