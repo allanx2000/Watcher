@@ -30,6 +30,10 @@ namespace Watcher.DataStore.SQLite
             if (fi.Exists)
             {
                 sqlWrapper = new SQLiteClient(fileName, false, new Dictionary<string, string>());
+
+                RunEviction();
+
+                DeleteOrphanedItems();
             }
             else
             {
@@ -38,6 +42,36 @@ namespace Watcher.DataStore.SQLite
                 CreateNewDatabase();
             }
 
+        }
+
+        private void DeleteOrphanedItems()
+        {
+            string command = "select i.ID, s.ProviderID from tbl_items i";
+            command += " left join tbl_sources s on i.SourceID = s.ID";
+            command += " where s.ProviderID is null";
+
+            List<int> ids = new List<int>();
+            var results = sqlWrapper.ExecuteSelect(command);
+
+            foreach (DataRow r in results.Rows)
+            {
+                ids.Add(Convert.ToInt32(r["ID"]));
+            }
+
+            command = "delete from {0} where ID in ({1})";
+            command = String.Format(command, ItemsTable, String.Join(",", ids));
+
+            sqlWrapper.ExecuteNonQuery(command);
+        }
+
+        private const int EvictionPeriod = 90; //days
+        private void RunEviction()
+        {
+            DateTime evictionDate = DateTime.Today.AddDays(-EvictionPeriod);
+            string command = "delete from {0} where AddedDate < '{1}'";
+            command = String.Format(command, ItemsTable, SQLUtils.ToSQLDateTime(evictionDate));
+
+            sqlWrapper.ExecuteNonQuery(command);
         }
 
 
@@ -57,25 +91,6 @@ namespace Watcher.DataStore.SQLite
             var result = SQLUtils.LoadCommandFromText(ScriptsPath, fileName, "txt", args);
             return result;
         }
-
-        //private Dictionary<string, string> sqlStatementDictionary = new Dictionary<string, string>();
-
-        /*private string LoadCommandFromText(string fileName, params object[] args)
-        {
-            if (!sqlStatementDictionary.ContainsKey(fileName))
-            {
-                string file = Path.Combine(ScriptsPath, fileName + ".txt");
-
-                using (StreamReader sr = new StreamReader(file))
-                {
-                    sqlStatementDictionary.Add(fileName, sr.ReadToEnd());
-                }
-            }
-
-            string command = sqlStatementDictionary[fileName];
-
-            return String.Format(command, args);
-        }*/
 
         private Dictionary<int, AbstractSource> sourceLookup = new Dictionary<int, AbstractSource>();
 
@@ -102,12 +117,12 @@ namespace Watcher.DataStore.SQLite
         }
 
 
-        private readonly DateTime EvictCutOff = DateTime.Today.AddDays(-5);
+        private readonly DateTime LatestCutOff = DateTime.Today.AddDays(-5);
 
         protected override List<AbstractItem> LoadItems()
         {
             
-            string evictString = SQLUtils.ToSQLDateTime(EvictCutOff);
+            string evictString = SQLUtils.ToSQLDateTime(LatestCutOff);
 
             string command = LoadCommandFT("SelectDefaultItems", ItemsTable, evictString);
 

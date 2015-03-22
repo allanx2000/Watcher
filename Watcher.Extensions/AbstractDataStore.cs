@@ -52,6 +52,7 @@ namespace Watcher.Extensions
         
         public void Initialize(List<AbstractProvider> providers)
         {
+
             Dictionary<string, AbstractProvider> providerLookup = providers.ToDictionary(p => p.GetProviderId());
 
             List<GenericSource> sources = LoadSources();
@@ -66,7 +67,7 @@ namespace Watcher.Extensions
                     sourceIds.Add(src.ID.Value);
                 }
             }
-
+            
             List<AbstractItem> its = LoadItems();
 
             foreach (AbstractItem i in its)
@@ -76,6 +77,11 @@ namespace Watcher.Extensions
                     Items.Add(i);
                 }
             }
+        }
+
+        private void RunEviction()
+        {
+            throw new NotImplementedException();
         }
 
         protected abstract List<GenericSource> LoadSources();

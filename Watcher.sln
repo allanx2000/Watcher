@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watcher.Provider.HundredZer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watcher.Client.WPF", "Watcher.Client.WPF\Watcher.Client.WPF.csproj", "{5964E21B-BDB8-4C41-97BB-B40314FD0B74}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watcher.Provider.GoodAnime", "Watcher.Provider.GoodAnime\Watcher.Provider.GoodAnime.csproj", "{5A76BD8B-6591-4F74-A862-7CBD447AF46E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watcher.DataStore.SQLite", "Watcher.DataStore.SQLite\Watcher.DataStore.SQLite.csproj", "{4450DF14-2A10-4054-B56C-724DC163FE53}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innouvous.Utils.Data.SQLiteWrapper", "..\Innouvous.Utils\Innouvous.Utils.SQLiteWrapper\Innouvous.Utils.Data.SQLiteWrapper.csproj", "{183BD0E1-5F1E-45E3-8BE9-34D9B64A5B99}"
@@ -33,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innouvous.Utils.ResourceDic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watcher.Extensions", "Watcher.Extensions\Watcher.Extensions.csproj", "{A5CE8509-0AF8-4E14-B50A-3F7E2E1BDE64}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watcher.Provider.TED", "Watcher.Provider.TED\Watcher.Provider.TED.csproj", "{C2465839-9681-4FA4-AECB-C1FFF031E607}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,10 +51,6 @@ Global
 		{5964E21B-BDB8-4C41-97BB-B40314FD0B74}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5964E21B-BDB8-4C41-97BB-B40314FD0B74}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5964E21B-BDB8-4C41-97BB-B40314FD0B74}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5A76BD8B-6591-4F74-A862-7CBD447AF46E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5A76BD8B-6591-4F74-A862-7CBD447AF46E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5A76BD8B-6591-4F74-A862-7CBD447AF46E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5A76BD8B-6591-4F74-A862-7CBD447AF46E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4450DF14-2A10-4054-B56C-724DC163FE53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4450DF14-2A10-4054-B56C-724DC163FE53}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4450DF14-2A10-4054-B56C-724DC163FE53}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -95,6 +91,10 @@ Global
 		{A5CE8509-0AF8-4E14-B50A-3F7E2E1BDE64}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5CE8509-0AF8-4E14-B50A-3F7E2E1BDE64}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5CE8509-0AF8-4E14-B50A-3F7E2E1BDE64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2465839-9681-4FA4-AECB-C1FFF031E607}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2465839-9681-4FA4-AECB-C1FFF031E607}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2465839-9681-4FA4-AECB-C1FFF031E607}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2465839-9681-4FA4-AECB-C1FFF031E607}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

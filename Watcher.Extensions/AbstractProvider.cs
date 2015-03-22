@@ -24,7 +24,10 @@ namespace Watcher.Extensions
             return providerId;
         }
 
-        public abstract List<string> GetMetaFields();
+        public virtual List<string> GetMetaFields()
+        {
+            return new List<string>();
+        }
 
         public virtual SourceOptions GetSourceOptions()
         {
