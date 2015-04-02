@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watcher.Extensions", "Watch
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watcher.Provider.TED", "Watcher.Provider.TED\Watcher.Provider.TED.csproj", "{C2465839-9681-4FA4-AECB-C1FFF031E607}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watcher.Provider.Dice", "Watcher.Provider.Dice\Watcher.Provider.Dice.csproj", "{D1AAFB46-D5A7-4124-BAF9-6A2AA67F9A17}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -95,6 +97,10 @@ Global
 		{C2465839-9681-4FA4-AECB-C1FFF031E607}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2465839-9681-4FA4-AECB-C1FFF031E607}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2465839-9681-4FA4-AECB-C1FFF031E607}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1AAFB46-D5A7-4124-BAF9-6A2AA67F9A17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1AAFB46-D5A7-4124-BAF9-6A2AA67F9A17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1AAFB46-D5A7-4124-BAF9-6A2AA67F9A17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1AAFB46-D5A7-4124-BAF9-6A2AA67F9A17}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

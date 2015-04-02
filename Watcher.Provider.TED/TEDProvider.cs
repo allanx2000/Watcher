@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Watcher.Extensions;
 
-namespace Watcher.Provider.Smack
+namespace Watcher.Provider.TED
 {
 
     public class TEDProvider : AbstractProvider
@@ -25,25 +25,37 @@ namespace Watcher.Provider.Smack
 
         }
 
-
+        
+        private const string META_MAX_PAGES = "MaxPages";
+        
+        public override List<string> GetMetaFields()
+        {
+            return new List<string>() {
+                META_MAX_PAGES
+            };
+        }
 
         protected override AbstractSource DoCreateNewSource(string name, string url, Dictionary<string, string> metaData)
         {
-            var source = new GenericSource("TED", PROVIDER);
+            var source = new TEDSource("TED");
 
-            source.SetMetaData(metaData);
+            int maxPages = int.Parse(metaData[META_MAX_PAGES]);
+
+            source.AddMetaData(META_MAX_PAGES, metaData[META_MAX_PAGES]);
 
             return source;
         }
-
-        private const int MaxPages = 1;
 
         protected override List<AbstractItem> GetNewItems(AbstractSource source)
         {
             List<AbstractItem> items = new List<AbstractItem>();
 
             WebClient wc = new WebClient();
-            for (int p = 1; p <= MaxPages; p++)
+            wc.UseDefaultCredentials = true;
+
+            int maxPages = int.Parse(source.GetMetaDataValue(META_MAX_PAGES));
+
+            for (int p = 1; p <= maxPages; p++)
             {
 
                 string page;
@@ -54,6 +66,24 @@ namespace Watcher.Provider.Smack
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(page);
 
+                var resultsContainer = doc.DocumentNode.SelectSingleNode("//div[@id='browse-results']");
+                var talks = resultsContainer.SelectNodes(".//div[@class='talk-link']");
+
+                foreach (var talk in talks)
+                {
+                    var innerContainer = talk.SelectSingleNode(".//div[@class='media__message']");
+
+                    var link = innerContainer.SelectSingleNode(".//a");
+                    if (link != null)
+                    {
+                        string name = link.InnerText.Trim();
+                        string link_url = link.Attributes["href"].Value;
+                        link_url = "https://www.ted.com/" + link_url;
+
+                        BasicItem item = new BasicItem(source, name, link_url);
+                        items.Add(item);
+                    }
+                }
             }
             return items;
         }
@@ -68,9 +98,5 @@ namespace Watcher.Provider.Smack
             return SourceOptions.CreateFromParameters(false, false);
         }
 
-        public override List<string> GetMetaFields()
-        {
-            return new List<string>();
-        }
     }
 }

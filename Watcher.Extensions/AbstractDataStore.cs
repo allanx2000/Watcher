@@ -168,10 +168,17 @@ namespace Watcher.Extensions
 
             foreach (AbstractItem i in items)
             {
-                if (DoAddItem(i))
+                try
                 {
-                   Items.Add(i);
-                   addedItems.Add(i);
+                    if (DoAddItem(i))
+                    {
+                        Items.Add(i);
+                        addedItems.Add(i);
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw new Exception(String.Format("Could not add: {0}; Message: {1}", i.Name, e.Message), e);
                 }
             }
 

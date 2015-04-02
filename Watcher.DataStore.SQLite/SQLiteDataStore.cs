@@ -239,7 +239,13 @@ namespace Watcher.DataStore.SQLite
         protected override bool DoAddItem(AbstractItem item)
         {
             string command = "select ID from {0} WHERE Name='{1}'";
-            command = String.Format(command, ItemsTable, item.Name);
+
+            string name = item.Name;
+
+            if (name.Contains("'"))
+                name = name.Replace("'", "''");
+
+            command = String.Format(command, ItemsTable, name);
 
             bool shouldAdd = sqlWrapper.ExecuteSelect(command).Rows.Count == 0;
 
