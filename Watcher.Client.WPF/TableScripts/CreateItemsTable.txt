@@ -1,6 +1,6 @@
 ﻿CREATE TABLE {0} (
   ID             integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-  Name           varchar(30) NOT NULL UNIQUE,
+  Name           varchar(100) NOT NULL UNIQUE,
   SourceID       integer NOT NULL,
   AddedDate      datetime NOT NULL,
   IsNew          boolean NOT NULL,
