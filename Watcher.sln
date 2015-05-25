@@ -35,6 +35,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watcher.Provider.TED", "Wat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watcher.Provider.Dice", "Watcher.Provider.Dice\Watcher.Provider.Dice.csproj", "{D1AAFB46-D5A7-4124-BAF9-6A2AA67F9A17}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watcher.Provider.Monster", "Watcher.Provider.Monster\Watcher.Provider.Monster.csproj", "{88A6C652-1584-439F-BF40-70CF7296BC8E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watcher.Provider.Jobs", "Watcher.Provider.Jobs\Watcher.Provider.Jobs.csproj", "{77FD051A-0538-4E8F-8C70-9284FC28A625}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -101,6 +105,14 @@ Global
 		{D1AAFB46-D5A7-4124-BAF9-6A2AA67F9A17}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D1AAFB46-D5A7-4124-BAF9-6A2AA67F9A17}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D1AAFB46-D5A7-4124-BAF9-6A2AA67F9A17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88A6C652-1584-439F-BF40-70CF7296BC8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88A6C652-1584-439F-BF40-70CF7296BC8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88A6C652-1584-439F-BF40-70CF7296BC8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88A6C652-1584-439F-BF40-70CF7296BC8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77FD051A-0538-4E8F-8C70-9284FC28A625}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77FD051A-0538-4E8F-8C70-9284FC28A625}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77FD051A-0538-4E8F-8C70-9284FC28A625}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77FD051A-0538-4E8F-8C70-9284FC28A625}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

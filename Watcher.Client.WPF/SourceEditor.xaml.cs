@@ -32,7 +32,7 @@ namespace Watcher.Client.WPF
                 set
                 {
                     val = value;
-                    RaiseEvent("Value");
+                    RaisePropertyChanged("Value");
                 }
             }
 

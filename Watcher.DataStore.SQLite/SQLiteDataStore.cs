@@ -217,7 +217,18 @@ namespace Watcher.DataStore.SQLite
         {
             string[] data = meta.Split(MetaDelim);
 
-            return data.Select(kv => kv.Split('=')).ToDictionary(split => split[0], split => split[1]);
+            Dictionary<string, string> kvs = new Dictionary<string, string>();
+
+            foreach (string kv in data)
+            {
+                int split = kv.IndexOf('=');
+                string key = kv.Substring(0, split);
+                string value = kv.Substring(split+1);
+
+                kvs.Add(key, value);
+            }
+
+            return kvs;
         }
 
         protected override void DoUpdateSource(AbstractSource source)

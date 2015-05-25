@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A5CE8509-0AF8-4E14-B50A-3F7E2E1BDE64}</ProjectGuid>
+    <ProjectGuid>{88A6C652-1584-439F-BF40-70CF7296BC8E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Watcher.Extensions</RootNamespace>
-    <AssemblyName>Watcher.Extensions</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <RootNamespace>Watcher.Provider.Monster</RootNamespace>
+    <AssemblyName>Watcher.Provider.Monster</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,8 +33,6 @@
     <Reference Include="HtmlAgilityPack">
       <HintPath>..\..\FundTracker\FundTracker\DLLs\HtmlAgilityPack.dll</HintPath>
     </Reference>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -43,28 +40,17 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbstractDataStore.cs" />
-    <Compile Include="AbstractItem.cs" />
-    <Compile Include="AbstractProvider.cs" />
-    <Compile Include="AbstractSource.cs" />
-    <Compile Include="BasicItem.cs" />
-    <Compile Include="GenericSource.cs" />
-    <Compile Include="Internal\MTObservableCollection.cs" />
+    <Compile Include="MonsterProvider.cs" />
+    <Compile Include="MonsterSource.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SourceOptions.cs" />
-    <Compile Include="V2\AbstractProvider.cs" />
-    <Compile Include="V2\AbstractSource.cs" />
-    <Compile Include="V2\GenericSource.cs" />
-    <Compile Include="V2\MetaDataType.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Readme.md" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="V2\Adapters\" />
+    <ProjectReference Include="..\Watcher.Extensions\Watcher.Extensions.csproj">
+      <Project>{a5ce8509-0af8-4e14-b50a-3f7e2e1bde64}</Project>
+      <Name>Watcher.Extensions</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

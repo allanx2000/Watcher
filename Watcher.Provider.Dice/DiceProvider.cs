@@ -175,7 +175,7 @@ namespace Watcher.Provider.Dice
                 string location, posted, title, link;
 
                 var linkNode = i.SelectSingleNode(".//a[@class='dice-btn-link']");
-                title = linkNode.InnerText;
+                title = linkNode.InnerText.Trim();
                 link = linkNode.Attributes["href"].Value;
 
                 if (link.Contains('?'))
@@ -183,8 +183,8 @@ namespace Watcher.Provider.Dice
 
                 string id = GetId(link);
 
-                location = i.SelectSingleNode(".//li[@class='location']").InnerText;
-                posted = i.SelectSingleNode(".//li[@class='posted']").InnerText;
+                location = i.SelectSingleNode(".//li[@class='location']").InnerText.Trim();
+                posted = i.SelectSingleNode(".//li[@class='posted']").InnerText.Trim();
 
                 string name = String.Format("{0} ({1}, {2})", title, location, id);
 

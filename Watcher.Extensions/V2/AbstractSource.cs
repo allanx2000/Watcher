@@ -2,19 +2,19 @@
 using System.Collections.Generic;
 using System.Windows.Media;
 
-namespace Watcher.Extensions
+namespace Watcher.Extensions.V2
 {
 
     public abstract class AbstractSource
     {
+        public bool HasUrlField {get; private set;}
+        public bool HasUniqueName { get; private set; }
+        
         public int? ID {get; private set;}
         public string ProviderID {get; private set;}
         public string SourceName { get; private set; }
-        //public string URL { get; private set; }
-
-        private Dictionary<string, string> MetaData = new Dictionary<string, string>();
-
-
+        
+        private Dictionary<string, MetaDataObject> MetaData = new Dictionary<string, MetaDataObject>();
 
         public static readonly Color DefaultColor = Colors.Black;
 
@@ -32,15 +32,14 @@ namespace Watcher.Extensions
         {
             get
             {
-                return MetaData.ContainsKey(URL) ? MetaData[URL] : null;
+                return MetaData.ContainsKey(URL) ? MetaData[URL].ID : null;
             }
         }
 
-        private void AddProtectedMetaData(string key, string value)
+        private void AddProtectedMetaData(string key, object value)
         {
-            MetaData[key] = value;
+            MetaData[key].SetValue(value);
         }
-
 
         private string SerializeColor(Color color)
         {
@@ -63,13 +62,13 @@ namespace Watcher.Extensions
                 try
                 {
                     if (MetaData.ContainsKey(UPDATES_COLOR))
-                        return Deserialize(MetaData[UPDATES_COLOR]);
+                        return Deserialize(MetaData[UPDATES_COLOR].Value.ToString());
                     else
                         return Colors.Black;
                 }
                 catch
                 {
-                    RemoveMetaData(UPDATES_COLOR);
+                    ClearMetaDataValue(UPDATES_COLOR);
 
                     return Colors.Black;
                 }
@@ -137,10 +136,6 @@ namespace Watcher.Extensions
         /// <param name="src">The Generic Source to get the parameters from</param>
         protected AbstractSource(GenericSource src)
         {
-            //Support for AbstractSource2
-            if (src == null)
-                return;
-
             if (src.ID.HasValue)
                 this.SetID(src.ID.Value);
 
@@ -156,19 +151,22 @@ namespace Watcher.Extensions
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public AbstractSource AddMetaData(string key, string value)
+        public AbstractSource SetMetaDataValue(string key, string value)
         {
-            if (!ProtectedValues.Contains(key))
-                MetaData[key] = value;
+            //TODO: Add to initializer, should inialize the Dictionary with the MetaDataObjects on create
+            /*if (!ProtectedValues.Contains(key))
             else throw new Exception(key + " is protected and cannot be explicitly set");
-
+            */
+            
+            MetaData[key].SetValue(value);
+            
             return this;
         }
 
-        public AbstractSource RemoveMetaData(string key)
+        public AbstractSource ClearMetaDataValue(string key)
         {
             if (MetaData.ContainsKey(key))
-                MetaData.Remove(key);
+                MetaData[key].SetValue(null);
 
             return this;
         }
@@ -178,10 +176,10 @@ namespace Watcher.Extensions
         /// </summary>
         /// <param name="key"></param>
         /// <returns>The value or null if not found or not set</returns>
-        public string GetMetaDataValue(string key)
+        public object GetMetaDataValue(string key)
         {
             if (MetaData.ContainsKey(key))
-                return MetaData[key];
+                return MetaData[key].Value;
             else return null;
         }
 
@@ -189,7 +187,7 @@ namespace Watcher.Extensions
         /// Gets the entire metadata dictionary
         /// </summary>
         /// <returns></returns>
-        public Dictionary<string,string> GetMetaData()
+        public Dictionary<string,MetaDataObject> GetMetaData()
         {
             return MetaData;
         }
@@ -243,7 +241,7 @@ namespace Watcher.Extensions
                 && this.SourceName == that.SourceName;
         }
 
-        public AbstractSource SetMetaData(Dictionary<string, string> metadata)
+        public AbstractSource SetMetaData(Dictionary<string, MetaDataObject> metadata)
         {
             this.MetaData = metadata;
 
@@ -253,7 +251,6 @@ namespace Watcher.Extensions
         public void CopyTo(AbstractSource outputSource)
         {
             outputSource.SetMetaData(this.MetaData);
-
             outputSource.SetProviderID(this.ProviderID);
             outputSource.SetSourceName(this.SourceName);
         }

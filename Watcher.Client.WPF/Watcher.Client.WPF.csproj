@@ -28,7 +28,7 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ProductName>Watcher</ProductName>
     <PublisherName>innouvous Technologies</PublisherName>
-    <ApplicationRevision>12</ApplicationRevision>
+    <ApplicationRevision>13</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -101,6 +101,7 @@
     </Compile>
     <Compile Include="CommandHelper.cs" />
     <Compile Include="CurrentConfigurations.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="RunConfigsWindow.xaml.cs">
       <DependentUpon>RunConfigsWindow.xaml</DependentUpon>
     </Compile>
@@ -155,6 +156,8 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="ClassDiagram1.cd" />
+    <None Include="ClassDiagram2.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
