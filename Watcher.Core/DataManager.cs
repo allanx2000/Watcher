@@ -33,7 +33,7 @@ namespace Watcher.Core
         //Instance
         AbstractDataStore dataStore;
         List<AbstractProvider> providers;
-
+        
         private DataManager(AbstractDataStore dataStore, List<AbstractProvider> providers)
         {
             this.dataStore = dataStore;
@@ -62,6 +62,30 @@ namespace Watcher.Core
             public int UpdateTimeOut { get; set; }
             public Action<bool, List<AbstractItem>, object> Callback { get; set; }
             public List<Thread> WorkerThreads { get; set; }
+        }
+
+        private List<Thread> currentThreads = new List<Thread>();
+        private Thread mainUpdateThread = null;
+
+        /// <summary>
+        /// Aborts the update, only works if multithreading
+        /// </summary>
+        public void AbortUpdate()
+        {
+            foreach (Thread t in currentThreads)
+            {
+                if (t.IsAlive)
+                {
+                    t.Abort();
+                    AddMessage(t.Name + "was aborted");
+                }
+            }
+
+            if (mainUpdateThread != null
+                && mainUpdateThread.IsAlive)
+            {
+                mainUpdateThread.Abort();
+            }
         }
 
         /// <summary>
@@ -93,12 +117,16 @@ namespace Watcher.Core
 
 
                         if (multithread) //Add it as a thread
-                            threads.Add(new Thread(() =>
+                        {
+                            Thread worker = new Thread(() =>
                             {
                                 DoItemsCheck(p, s, addedItems);
+                            });
 
-                                //threadCount--;
-                            }));
+                            worker.Name = s.GetDisplayName();
+
+                            threads.Add(worker);
+                        }
                         else //Do it now
                         {
                             DoItemsCheck(p, s, addedItems);
@@ -117,9 +145,11 @@ namespace Watcher.Core
                         AddedItems = addedItems
                     };
 
-                    var th = new Thread(DoUpdates);
+                    mainUpdateThread = new Thread(DoUpdates);
 
-                    th.Start(threadParams);
+                    mainUpdateThread.Start(threadParams);
+
+                    currentThreads = threads;
                 }
                 else
                     callback.Invoke(true, addedItems, null);

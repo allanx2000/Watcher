@@ -64,12 +64,14 @@
 
         <GroupBox Header="Options" Grid.Row="1" HorizontalAlignment="Stretch">
 
-            <Grid Name="OptionsGrid" ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <Grid Name="OptionsGrid" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
             </Grid>
+            </ScrollViewer>
 
         </GroupBox>
 

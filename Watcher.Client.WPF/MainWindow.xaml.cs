@@ -117,25 +117,28 @@ namespace Watcher.Client.WPF
             ResetUpdateTimer();
         }
 
-
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             //TODO: Kill update?
             if (viewModel != null && viewModel.IsUpdating)
             {
-                e.Cancel = true;
+                viewModel.AbortUpdate();
             }
-            else Application.Current.Shutdown(0);
+            
+            Application.Current.Shutdown(0);
         }
 
-        //These should be made into MVVM?
+        /*
+        //Not used?
         private void ToggleSourcesButton_Click(object sender, RoutedEventArgs e)
         {
             SourcesGroupBox.Visibility = SourcesGroupBox.Visibility == Visibility.Visible
                 ? Visibility.Collapsed
                 : Visibility.Visible;
-        }
+        }*/
 
+
+        //Easier here
         private void OptionsMenuItem_Click(object sender, RoutedEventArgs e)
         {
             var window = new RunConfigsWindow();
@@ -145,25 +148,6 @@ namespace Watcher.Client.WPF
             {
                 LoadFromConfigurations();
             }
-        }
-
-        private void MarkAllButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            if (MessageBox.Show("Mark all items as read?", "Mark All Read", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
-                return;
-
-            List<AbstractItem> updated = new List<AbstractItem>();
-            foreach (ItemViewModel ivm in ItemsListBox.Items)
-            {
-                if (ivm.Data.New)
-                {
-                    ivm.Data.SetNew(false);
-                    updated.Add(ivm.Data);
-                }
-            }
-
-            DataManager.Instance().DataStore.UpdateItem(updated);
-            viewModel.SortedView.Refresh();
         }
 
 

@@ -340,7 +340,7 @@ namespace Watcher.Client.WPF.ViewModels
 
         #endregion
 
-        #region Other
+        #region Items
 
         public ICommand MarkSelectedCommand
         {
@@ -369,15 +369,21 @@ namespace Watcher.Client.WPF.ViewModels
             SortedView.Refresh();
         }
 
-        /*
-        //TODO: Where is the items?
-        private void MarkAllButton_OnClick(object sender, RoutedEventArgs e)
+        public ICommand MarkAllCommand
+        {
+            get
+            {
+                return new CommandHelper(MarkAll);
+            }
+        }
+
+        private void MarkAll()
         {
             if (MessageBox.Show("Mark all items as read?", "Mark All Read", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
                 return;
 
             List<AbstractItem> updated = new List<AbstractItem>();
-            foreach (ItemViewModel ivm in ItemsListBox.Items)
+            foreach (ItemViewModel ivm in items)
             {
                 if (ivm.Data.New)
                 {
@@ -387,52 +393,8 @@ namespace Watcher.Client.WPF.ViewModels
             }
 
             DataManager.Instance().DataStore.UpdateItem(updated);
-            viewModel.SortedView.Refresh();
-        }*/
-
-        /*
-        private void ToggleSourcesButton_Click(object sender, RoutedEventArgs e)
-        {
-            SourcesGroupBox.Visibility = SourcesGroupBox.Visibility == Visibility.Visible
-                ? Visibility.Collapsed
-                : Visibility.Visible;
+            SortedView.Refresh();
         }
-
-        private void OptionsMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            var window = new RunConfigsWindow();
-            window.ShowDialog();
-
-            if (!window.Cancelled)
-            {
-                LoadFromConfigurations();
-            }
-        }*/
-
-        public ICommand ShowLastUpdatedCommand
-        {
-            get
-            {
-                return new CommandHelper(ShowLastUpdated);
-            }
-        }
-
-        private void ShowLastUpdated()
-        {
-            string message = String.Join("\r\n", DataManager.Instance().Messages);
-
-            var opts = DialogControlOptions.SetTextBoxMessageOptions(message, false);
-
-            var window = new Innouvous.Utils.DialogWindow.Windows.SimpleDialogWindow(opts);
-            window.Title = "Status";
-
-            window.ShowDialog();
-        }
-
-        #endregion
-
-        #region Items
-
 
         private CommandHelper doItemAction;
         public CommandHelper DoItemAction
@@ -468,6 +430,29 @@ namespace Watcher.Client.WPF.ViewModels
 
         #endregion
 
+        #region Other
+
+        public ICommand ShowLastUpdatedCommand
+        {
+            get
+            {
+                return new CommandHelper(ShowLastUpdated);
+            }
+        }
+
+        private void ShowLastUpdated()
+        {
+            string message = String.Join("\r\n", DataManager.Instance().Messages);
+
+            var opts = DialogControlOptions.SetTextBoxMessageOptions(message, false);
+
+            var window = new Innouvous.Utils.DialogWindow.Windows.SimpleDialogWindow(opts);
+            window.Title = "Status";
+
+            window.ShowDialog();
+        }
+        
+        #endregion
         #endregion
 
         #region Items Update Logic
@@ -493,6 +478,18 @@ namespace Watcher.Client.WPF.ViewModels
             DataManager.Instance().UpdateItems(AppConfigs.UpdateTimeout, OnFinishedUpdating);
         }
 
+        public void AbortUpdate()
+        {
+            if (IsUpdating)
+            {
+                DataManager.Instance().AbortUpdate();
+                
+                IsUpdating = false;
+            }
+        }
+
+
+        //This just adds the new items to the View
         private void OnFinishedUpdating(bool success, List<AbstractItem> newItems, object data)
         {
             LastUpdated = DateTime.Now;
@@ -504,12 +501,12 @@ namespace Watcher.Client.WPF.ViewModels
                 {
                     try
                     {
-
                         var svm = GetSVM(i.GetSource());
                         Items.Add(new ItemViewModel(i, svm));
                     }
                     catch (Exception ex)
                     {
+                        //Only output errors
                         DataManager.Instance().AddMessage(ex.Message);
                     }
                 }

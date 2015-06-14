@@ -90,7 +90,7 @@ namespace Watcher.Provider.Jobs
                 case SourceNames.Monster:
                     return MonsterProvider.GetNewItems(source);
                 default:
-                    return new List<AbstractItem>(); //throw exception?
+                    throw new Exception("Unrecognized source: " + js.Source);
             }
         }
 

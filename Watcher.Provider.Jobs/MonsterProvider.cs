@@ -35,10 +35,16 @@ namespace Watcher.Provider.Jobs
                         hasUrl = true;
                         break;
                     case JobsProvider.META_PAGES:
-                        if (!int.TryParse(m.GetValueAsString(), out tmp))
+
+                        string value = m.GetValueAsString();
+
+                        if (String.IsNullOrEmpty(value))
+                            mdo.SetValue(DefaultPages);
+                        else if (int.TryParse(value, out tmp))
+                            mdo.SetValue(tmp);    
+                        else
                             throw new Exception("Not a valid number");
                         
-                        mdo.SetValue(tmp);    
                         hasPages = true;
                         
                         break;

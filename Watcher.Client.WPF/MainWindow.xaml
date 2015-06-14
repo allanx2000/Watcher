@@ -117,7 +117,7 @@
                     <Button Name="MarkSelectedButton" IsEnabled="{Binding UpdateButtonsEnabled}" 
                             Command="{Binding MarkSelectedCommand}" 
                             CommandParameter="{Binding ElementName=ItemsListBox, Path=SelectedItems}">Mark _Selected As Read</Button>
-                    <Button Name="MarkAllButton" IsEnabled="{Binding UpdateButtonsEnabled}" Click="MarkAllButton_OnClick">Mark _All As Read</Button>
+                    <Button Name="MarkAllButton" IsEnabled="{Binding UpdateButtonsEnabled}" Command="{Binding MarkAllCommand}">Mark _All As Read</Button>
                 </StackPanel>
 
 

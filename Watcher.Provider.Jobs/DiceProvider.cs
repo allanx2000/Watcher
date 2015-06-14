@@ -16,7 +16,7 @@ namespace Watcher.Provider.Jobs
     {
         private const string BASE_URL = "https://www.dice.com/jobs/";
 
-        private const string DefaultRange = "30"; //miles
+        private const string DefaultRange = "10"; //miles
         private const string DefaultPages = "5";
         private const string DefaultPageSize = "50";
 
@@ -96,7 +96,7 @@ namespace Watcher.Provider.Jobs
 
             //Check this
             
-            name = String.Format("{0}|{1}", query, location);
+            name = String.Format("{0} | {1}", query, location);
 
             
             AbstractSource source = new JobsSource(name);
