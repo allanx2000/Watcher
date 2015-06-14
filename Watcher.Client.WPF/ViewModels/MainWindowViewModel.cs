@@ -10,7 +10,7 @@ using Watcher.Core;
 using Watcher.Core.Items;
 using System.Linq;
 using System.Collections.Specialized;
-using Watcher.Extensions;
+using Watcher.Extensions.V2;
 using Watcher.Extensions.Internal;
 
 namespace Watcher.Client.WPF.ViewModels

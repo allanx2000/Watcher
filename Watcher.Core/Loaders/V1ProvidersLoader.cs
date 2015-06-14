@@ -10,10 +10,10 @@ using Watcher.Extensions;
 namespace Watcher.Core.Loaders
 {
 
-    public class ProvidersLoader : AbstractDLLLoader<AbstractProvider>, IProviderLoader
+    public class V1ProvidersLoader : AbstractDLLLoader<AbstractProvider>
     {
         
-        public ProvidersLoader(string dllFolder) : base(dllFolder)
+        public V1ProvidersLoader(string dllFolder) : base(dllFolder)
         {}
 
         public List<AbstractProvider> GetProviders()

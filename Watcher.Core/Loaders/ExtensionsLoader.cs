@@ -7,25 +7,27 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
 using Watcher.Extensions;
+using Watcher.Extensions.V2.Adapters;
 
 namespace Watcher.Core.Loaders
 {
     public class ExtensionsLoader : IProviderLoader
     {
 
-        private static ExtensionsLoader instance;
-
         private DirectoryInfo extensionsDirectory;
 
         private List<AbstractDataStore> dataStores = new List<AbstractDataStore>();
-        private List<AbstractProvider> providers = new List<AbstractProvider>();
+        private List<Watcher.Extensions.V2.AbstractProvider> providers = new List<Watcher.Extensions.V2.AbstractProvider>();
 
         public ExtensionsLoader(string extensionsPath)
         {
             try
             {
                 Type providerType = typeof(AbstractProvider);
-                Type dataStoreType = typeof(AbstractDataStore);
+
+                Type newProviderType = typeof(Watcher.Extensions.V2.AbstractProvider);
+                
+
 
                 if (Directory.Exists(extensionsPath))
                 {
@@ -42,10 +44,10 @@ namespace Watcher.Core.Loaders
 
                             foreach (Type t in assem.GetTypes())
                             {
-                                if (t.IsSubclassOf(providerType))
-                                    providers.Add((AbstractProvider) CreateInstance(assem, t));
-                           //     else if (t.IsSubclassOf(dataStoreType))
-                           //         dataStores.Add((AbstractDataStore) CreateInstance(assem, t));
+                                if (t.IsSubclassOf(newProviderType))
+                                    providers.Add((Watcher.Extensions.V2.AbstractProvider)CreateInstance(assem, t));
+                                else if (t.IsSubclassOf(providerType))
+                                    V1Converter.ConvertProvider((AbstractProvider)CreateInstance(assem, t));
                             }
                         }
                         catch (Exception ex)
@@ -66,7 +68,7 @@ namespace Watcher.Core.Loaders
             return assem.CreateInstance(t.FullName);
         }
 
-        public List<AbstractProvider> GetProviders()
+        public List<Watcher.Extensions.V2.AbstractProvider> GetProviders()
         {
             return providers;
         }

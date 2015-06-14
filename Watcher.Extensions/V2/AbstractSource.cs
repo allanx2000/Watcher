@@ -6,10 +6,7 @@ namespace Watcher.Extensions.V2
 {
 
     public abstract class AbstractSource
-    {
-        public bool HasUrlField {get; private set;}
-        public bool HasUniqueName { get; private set; }
-        
+    {   
         public int? ID {get; private set;}
         public string ProviderID {get; private set;}
         public string SourceName { get; private set; }
@@ -32,12 +29,17 @@ namespace Watcher.Extensions.V2
         {
             get
             {
-                return MetaData.ContainsKey(URL) ? MetaData[URL].ID : null;
+                return MetaData.ContainsKey(URL) && MetaData[URL].Value  != null? MetaData[URL].Value.ToString() : null;
             }
         }
 
         private void AddProtectedMetaData(string key, object value)
         {
+            if (!MetaData.ContainsKey(key))
+            {
+                MetaData.Add(key, new MetaDataObject(key, key.ToString()));
+            }
+
             MetaData[key].SetValue(value);
         }
 
@@ -189,7 +191,13 @@ namespace Watcher.Extensions.V2
         /// <returns></returns>
         public Dictionary<string,MetaDataObject> GetMetaData()
         {
-            return MetaData;
+            var clone = new Dictionary<string, MetaDataObject>(MetaData);
+            foreach (string field in ProtectedValues)
+            {
+                clone.Remove(field);
+            }
+
+            return clone;
         }
 
 
@@ -241,6 +249,11 @@ namespace Watcher.Extensions.V2
                 && this.SourceName == that.SourceName;
         }
 
+        /// <summary>
+        /// Sets the metadata fields. This should contain all fields from the Provider with any values in the Source itself placed into the Value property 
+        /// </summary>
+        /// <param name="metadata"></param>
+        /// <returns></returns>
         public AbstractSource SetMetaData(Dictionary<string, MetaDataObject> metadata)
         {
             this.MetaData = metadata;
@@ -256,5 +269,17 @@ namespace Watcher.Extensions.V2
         }
 
 
+        public void SetMetaData(List<MetaDataObject> metaData)
+        {
+            Dictionary<string, MetaDataObject> dict = new Dictionary<string, MetaDataObject>();
+            
+            foreach(var i in metaData)
+            {
+                dict.Add(i.ID, i);
+            }
+
+            this.MetaData = dict;
+
+        }
     }
 }

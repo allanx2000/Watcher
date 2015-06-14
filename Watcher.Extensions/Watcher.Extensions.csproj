@@ -55,17 +55,23 @@
     <Compile Include="Internal\MTObservableCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SourceOptions.cs" />
+    <Compile Include="V2\AbstractDataStore.cs" />
+    <Compile Include="V2\AbstractItem.cs" />
     <Compile Include="V2\AbstractProvider.cs" />
     <Compile Include="V2\AbstractSource.cs" />
+    <Compile Include="V2\Adapters\ItemAdapter.cs" />
+    <Compile Include="V2\Adapters\ProvidersAdapter.cs" />
+    <Compile Include="V2\Adapters\SourceAdapter.cs" />
+    <Compile Include="V2\Adapters\V2toV1ItemAdapter.cs" />
     <Compile Include="V2\GenericSource.cs" />
-    <Compile Include="V2\MetaDataType.cs" />
+    <Compile Include="V2\MetaDataObject.cs" />
+    <Compile Include="V2\Adapters\V1Converter.cs" />
+    <Compile Include="V2\MetaDataObjectBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Readme.md" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="V2\Adapters\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

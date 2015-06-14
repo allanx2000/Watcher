@@ -6,9 +6,14 @@ namespace Watcher.Extensions.V2
     {
         private readonly string providerId;
 
-        protected AbstractProvider(string providerId)
+        public bool HasUrlField { get; protected set; }
+        public bool HasUniqueName { get; protected set; }
+     
+        protected AbstractProvider(string providerId, bool hasUrlField = false, bool hasUniqueName = false)
         {
             this.providerId = providerId;
+            this.HasUrlField = hasUrlField;
+            this.HasUniqueName = hasUniqueName;
         }
 
         public string ProviderId
@@ -24,18 +29,19 @@ namespace Watcher.Extensions.V2
             return providerId;
         }
 
-        public virtual List<string> GetMetaFields()
+        public virtual List<MetaDataObject> GetMetaFields()
         {
-            return new List<string>();
+            return new List<MetaDataObject>();
         }
-
-        public virtual SourceOptions GetSourceOptions()
+        public AbstractSource CreateNewSource(string name, string url, Dictionary<string, MetaDataObject> metaData)
         {
-            return SourceOptions.CreateFromParameters();
+            var values = new List<MetaDataObject>(metaData.Values);
+
+            return CreateNewSource(name, url, values);
         }
 
         //TODO: CHANGE
-        public AbstractSource CreateNewSource(string name, string url, Dictionary<string,string> metaData)
+        public AbstractSource CreateNewSource(string name, string url, List<MetaDataObject> metaData)
         {
             var s = DoCreateNewSource(name, url, metaData);
             
@@ -52,7 +58,7 @@ namespace Watcher.Extensions.V2
         /// <param name="url"></param>
         /// <param name="metaData">Meta to be used for reference only</param>
         /// <returns></returns>
-        protected abstract AbstractSource DoCreateNewSource(string name, string url, Dictionary<string, string> metaData);
+        protected abstract AbstractSource DoCreateNewSource(string name, string url, List<MetaDataObject> metaData);
         
         public List<AbstractItem> CheckForNewItems(AbstractSource source)
         {
@@ -75,5 +81,6 @@ namespace Watcher.Extensions.V2
         }
 
         public abstract void DoAction(AbstractItem item);
+
     }
 }

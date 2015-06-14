@@ -101,7 +101,6 @@
     </Compile>
     <Compile Include="CommandHelper.cs" />
     <Compile Include="CurrentConfigurations.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="RunConfigsWindow.xaml.cs">
       <DependentUpon>RunConfigsWindow.xaml</DependentUpon>
     </Compile>
@@ -111,6 +110,7 @@
     <Compile Include="Utils.cs" />
     <Compile Include="ViewModels\ItemViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="ViewModels\MetaDataObjectViewModel.cs" />
     <Compile Include="ViewModels\RunConfigsViewModel.cs" />
     <Compile Include="ViewModels\SourceViewModel.cs" />
     <Page Include="ColorPicker.xaml">
@@ -156,8 +156,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="ClassDiagram1.cd" />
-    <None Include="ClassDiagram2.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

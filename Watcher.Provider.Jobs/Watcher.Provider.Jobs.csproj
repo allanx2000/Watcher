@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="HtmlAgilityPack">
+      <HintPath>..\..\..\Lib\HtmlAgility\Net40-client\HtmlAgilityPack.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -39,8 +42,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FilterLibrary.cs" />
+    <Compile Include="DiceProvider.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FilterUtil.cs" />
+    <Compile Include="JobItem.cs" />
+    <Compile Include="JobsProvider.cs" />
+    <Compile Include="JobsScraper.cs" />
+    <Compile Include="JobsSource.cs" />
+    <Compile Include="MonsterProvider.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SourceFactory.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Watcher.Extensions\Watcher.Extensions.csproj">
+      <Project>{a5ce8509-0af8-4e14-b50a-3f7e2e1bde64}</Project>
+      <Name>Watcher.Extensions</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -74,5 +74,16 @@ namespace Watcher.Extensions
         }
 
         public abstract void DoAction(AbstractItem item);
+
+        
+        #region Upgrade Version Support
+        
+        internal List<AbstractItem> SupportGetNewItems(AbstractSource source)
+        {
+            return GetNewItems(source);
+        }
+
+
+        #endregion
     }
 }

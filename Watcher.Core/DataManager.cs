@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Watcher.Core.Items;
-using Watcher.Extensions;
+using Watcher.Extensions.V2;
 using Watcher.Extensions.Internal;
 
 namespace Watcher.Core
@@ -61,6 +61,8 @@ namespace Watcher.Core
 
         public void UpdateItems(int updateTimeoutInMinutes = 2, Action<List<AbstractItem>, string> callback = null, bool multithread = true)
         {
+            //multithread = false;
+
             ClearMessages();
 
             List<AbstractItem> addedItems = new List<AbstractItem>();

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using Watcher.Core;
 using Watcher.Core.Items;
-using Watcher.Extensions;
+using Watcher.Extensions.V2;
 
 namespace Watcher.Client.WPF.ViewModels
 {

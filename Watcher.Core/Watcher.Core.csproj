@@ -54,8 +54,10 @@
     <Compile Include="Items\Show.cs" />
     <Compile Include="Loaders\AbstractDLLLoader.cs" />
     <Compile Include="Loaders\IProviderLoader.cs" />
+    <Compile Include="Loaders\SuperProvidersLoader.cs" />
+    <Compile Include="Loaders\V1ProvidersLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Loaders\ProvidersLoader.cs" />
+    <Compile Include="Loaders\V2ProvidersLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Watcher.Extensions\Watcher.Extensions.csproj">

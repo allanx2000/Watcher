@@ -8,43 +8,18 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Watcher.Client.WPF.ViewModels;
 using Innouvous.Utils.MVVM;
-using Watcher.Extensions;
+using Watcher.Extensions.V2;
 
 namespace Watcher.Client.WPF
 {
+
+    //TODO: Convert to MVVM
 
     /// <summary>
     /// Interaction logic for SourceEditor.xaml
     /// </summary>
     public partial class SourceEditor : Window
     {
-        private class MetaData : ObservableClass
-        {
-            public string Name { get; private set; }
-
-            private string val;
-            public string Value
-            {
-                get
-                {
-                    return val;
-                }
-                set
-                {
-                    val = value;
-                    RaisePropertyChanged("Value");
-                }
-            }
-
-            public MetaData(string name, string value = null)
-            {
-                Name = name;
-                Value = value;
-            }
-        }
-
-        //private AbstractSource currentSource;
-
         private AbstractDataStore dataStore;
         private List<AbstractProvider> providers;
 
@@ -101,8 +76,7 @@ namespace Watcher.Client.WPF
 
         private void LoadFromSource(AbstractSource source)
         {
-            //currentSource = source;
-
+            
             IDField.Content = source.ID.Value;
             NameTextBox.Text = source.SourceName;
             URLTextBox.Text = source.Url;
@@ -112,11 +86,9 @@ namespace Watcher.Client.WPF
 
             IDPanel.Visibility = System.Windows.Visibility.Visible;
 
-
             selectedColor = source.UpdatesColor;
 
             ColorPreviewRectangle.Fill = new SolidColorBrush(selectedColor);
-
 
         }
 
@@ -139,20 +111,35 @@ namespace Watcher.Client.WPF
                     throw new Exception("No provider selected");
 
                 var selectedProvider = (AbstractProvider)TypeComboBox.SelectedItem;
-                var so = selectedProvider.GetSourceOptions();
 
-                var meta = new Dictionary<string, string>();
-                foreach (MetaData md in ProviderOptionsListBox.ItemsSource)
+                var meta = selectedProvider.GetMetaFields();
+
+                foreach (Control c in OptionsGrid.Children)
                 {
-                    if (!String.IsNullOrEmpty(md.Value))
-                        meta.Add(md.Name, md.Value);
+                    if (c.Tag != null)
+                    {
+                        string id = c.Tag.ToString();
+                        string value = null;
+
+                        if (c is TextBox)
+                            value = ((TextBox)c).Text;
+                        else if (c is ComboBox)
+                            value = ((ComboBox)c).Text;
+                        else
+                        {
+                            //Error
+                        }
+
+                        var item = MetaDataObject.FindIn(meta, id);
+                        item.SetValue(value);
+                    }
                 }
 
 
                 var newSource = selectedProvider
                         .CreateNewSource(
-                            so.HasUniqueName ? NameTextBox.Text : null,
-                            so.HasURLField ? URLTextBox.Text : null,
+                            selectedProvider.HasUniqueName ? NameTextBox.Text : null,
+                            selectedProvider.HasUrlField ? URLTextBox.Text : null,
                             meta);
 
                 newSource.SetUpdatesColor(selectedColor);
@@ -205,28 +192,75 @@ namespace Watcher.Client.WPF
             }
         }
 
+        //TODO: Set To V2
         private void ReloadFields(AbstractProvider provider)
         {
-            
+            NamePanel.Visibility = provider.HasUniqueName ? Visibility.Visible : Visibility.Collapsed;
 
-            SourceOptions options = provider.GetSourceOptions();
+            URLPanel.Visibility = provider.HasUrlField ? Visibility.Visible : Visibility.Collapsed;
 
-            NamePanel.Visibility = options.HasUniqueName ? Visibility.Visible : Visibility.Collapsed;
+            List<MetaDataObject> meta = sourceViewModel != null ? new List<MetaDataObject>(sourceViewModel.Data.GetMetaData().Values) :
+                provider.GetMetaFields();
 
-            URLPanel.Visibility = options.HasURLField ? Visibility.Visible : Visibility.Collapsed;
+            OptionsGrid.Children.Clear();
+            OptionsGrid.RowDefinitions.Clear();
 
-            List<MetaData> metadata = new List<MetaData>();
+            int rowCounter = 0;
 
-            foreach (var o in provider.GetMetaFields())
+            Dictionary<string,string> values = null;
+
+            if (sourceViewModel != null)
             {
-                string value = sourceViewModel != null ?
-                    sourceViewModel.Data.GetMetaDataValue(o)
-                    : null;
-
-                metadata.Add(new MetaData(o, value));
+                values = MetaDataObject.ToDictionary(sourceViewModel.Data.GetMetaData());
             }
 
-            ProviderOptionsListBox.ItemsSource = metadata;
+            foreach (var m in meta)
+            {
+                RowDefinition rd = new RowDefinition() { Height = GridLength.Auto };
+                OptionsGrid.RowDefinitions.Add(rd);
+
+                Label l = new Label();
+                l.Content = m.DisplayName;
+                l.SetValue(Grid.RowProperty, rowCounter);
+                l.SetValue(Grid.ColumnProperty, 0);
+                OptionsGrid.Children.Add(l);
+
+                Control control = null;
+
+                string value = null;
+                if (values != null && values.ContainsKey(m.ID))
+                    value = m.GetValueAsString();
+
+                switch (m.FieldType)
+                {
+                    case MetaDataObject.Type.NA:
+                        break;
+                    case MetaDataObject.Type.Selector:
+                        var cb = new ComboBox();
+                        cb.ItemsSource = m.SelectorValues;
+                        cb.Text = value;
+                        
+                        control = cb;
+                        break;
+                    case MetaDataObject.Type.String:
+                        TextBox tb = new TextBox();
+                        tb.Text = value;
+                        
+                        control = tb;
+                        break;
+                }
+
+                if (control != null)
+                {
+                    control.SetValue(Grid.RowProperty, rowCounter);
+                    control.SetValue(Grid.ColumnProperty, 1);
+                    control.Tag = m.ID;
+
+                    OptionsGrid.Children.Add(control);
+                }
+
+                rowCounter++;
+            }
         }
 
         private void ColorPreviewRectangle_MouseDown(object sender, MouseButtonEventArgs e)

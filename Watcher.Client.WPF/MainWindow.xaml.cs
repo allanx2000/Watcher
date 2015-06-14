@@ -13,7 +13,7 @@ using System.Windows.Threading;
 using Innouvous.Utils;
 using Innouvous.Utils.DialogWindow;
 using Innouvous.Utils.DialogWindow.Windows;
-using Watcher.Extensions;
+using Watcher.Extensions.V2;
 
 namespace Watcher.Client.WPF
 {
@@ -101,9 +101,11 @@ namespace Watcher.Client.WPF
         /// </summary>
         private void LoadFromConfigurations()
         {
-            var datastore = new SQLiteDataStore(AppConfigs.DataStoreFile);
+            //var datastore = new SQLiteDataStore(AppConfigs.DataStoreFile);
 
-            var providerLoader = new ProvidersLoader(AppConfigs.ProvidersPath);
+            var datastore = new SQLiteDataStoreV2(AppConfigs.DataStoreFile);
+            var providerLoader = new SuperProvidersLoader(AppConfigs.ProvidersPath);
+            
             var providers = providerLoader.GetProviders();
 
             DataManager.Initialize(datastore, providers);
