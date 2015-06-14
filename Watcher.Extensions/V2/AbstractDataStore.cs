@@ -82,7 +82,6 @@ namespace Watcher.Extensions.V2
                 {
                     if (providerLookup.ContainsKey(src.ProviderID))
                     {
-
                         //Use the provider to convert the GenericSource to Provider-specific Source, if defined
                         var provider = providerLookup[src.ProviderID];
                         var newSource = provider.CastSource(src);
@@ -91,8 +90,6 @@ namespace Watcher.Extensions.V2
 
                         //The metadata fields loaded from the datastore are not completely initialized (no FieldType, DisplayName, etc.)
                         //this gets the data from the Provider itself and updates the values in the source
-
-                        //TODO: Is this necessary, why not just get it from the provider when needed?
 
                         foreach (var md in provider.GetMetaFields())
                         {   
@@ -111,13 +108,13 @@ namespace Watcher.Extensions.V2
                 }
                 catch (Exception e)
                 {
-
+                    //Error loading source, just skip
                 }
-
             }
 
             List<AbstractItem> its = LoadItems();
 
+            //Only load the ones that have a Source loaded
             foreach (AbstractItem i in its)
             {
                 if (sourceIds.Contains(i.SourceId))

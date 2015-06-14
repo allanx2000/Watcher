@@ -67,7 +67,12 @@
                     <Button Grid.Column="3" Command="{Binding ClearCommand}">Clear</Button>
                 </Grid>
 
-                <ListBox Grid.Row="1" Name="ItemsListBox" MinHeight="250" VerticalAlignment="Stretch" SelectionMode="Extended" ItemsSource="{Binding SortedView}" ScrollViewer.VerticalScrollBarVisibility="Auto" SelectedItem="{Binding SelectedItem}" MouseDoubleClick="ItemsListBox_MouseDoubleClick">
+                <ListBox Grid.Row="1" Name="ItemsListBox" 
+                         MinHeight="250" VerticalAlignment="Stretch" SelectionMode="Extended" 
+                         ItemsSource="{Binding SortedView}" 
+                         ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                         SelectedItem="{Binding SelectedItem}" 
+                    MouseDoubleClick="ItemsListBox_MouseDoubleClick">
                     <ListBox.ItemTemplate>
                         <DataTemplate DataType="viewModels:ItemViewModel">
                             <StackPanel>
@@ -93,9 +98,11 @@
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0" VerticalAlignment="Center" Orientation="Horizontal">
 
-                        <Label Name="LastUpdatedLabel" 
-                               MouseDoubleClick="LastUpdatedLabel_MouseDoubleClick" 
+                        <Label Name="LastUpdatedLabel"
                                >
+                            <Label.InputBindings>
+                                <MouseBinding Command="{Binding ShowLastUpdatedCommand}" Gesture="LeftDoubleClick" />
+                            </Label.InputBindings>
                             <TextBlock Text="{Binding LastUpdatedString}" 
                                TextDecorations="Underline"/>
                         </Label>
@@ -107,7 +114,9 @@
 
                 <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button Name="UpdateItemButton" Command="{Binding UpdateCommand}" IsEnabled="{Binding UpdateButtonsEnabled}" >Update</Button>
-                    <Button Name="MarkSelectedButton" IsEnabled="{Binding UpdateButtonsEnabled}" Click="MarkSelectedButton_Click">Mark _Selected As Read</Button>
+                    <Button Name="MarkSelectedButton" IsEnabled="{Binding UpdateButtonsEnabled}" 
+                            Command="{Binding MarkSelectedCommand}" 
+                            CommandParameter="{Binding ElementName=ItemsListBox, Path=SelectedItems}">Mark _Selected As Read</Button>
                     <Button Name="MarkAllButton" IsEnabled="{Binding UpdateButtonsEnabled}" Click="MarkAllButton_OnClick">Mark _All As Read</Button>
                 </StackPanel>
 

@@ -29,6 +29,10 @@ namespace Watcher.Extensions.V2
             return providerId;
         }
 
+        /// <summary>
+        /// This returns the ALL fields that the Provider requires/uses
+        /// </summary>
+        /// <returns></returns>
         public virtual List<MetaDataObject> GetMetaFields()
         {
             return new List<MetaDataObject>();

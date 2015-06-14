@@ -63,10 +63,10 @@ namespace Watcher.Extensions.V2
             return this;
         }
 
-        public AbstractItem SetNew(bool isNew)
+        //Why does this use a Builder pattern?
+        public void SetNew(bool isNew)
         {
             New = isNew;
-            return this;
         }
 
         

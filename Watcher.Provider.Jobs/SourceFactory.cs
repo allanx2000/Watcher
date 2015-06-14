@@ -30,7 +30,7 @@ namespace Watcher.Provider.Jobs
             switch (typeString)
             {
                 case JobsProvider.SourceNames.Dice:
-                    throw new NotImplementedException();
+                    return DiceProvider.DoCreateNewSource(name, metaData);
                 case JobsProvider.SourceNames.Monster:
                     return MonsterProvider.DoCreateNewSource(name, metaData);
                 default:

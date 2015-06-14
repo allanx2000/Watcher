@@ -86,9 +86,9 @@ namespace Watcher.Provider.Jobs
             switch (js.Source)
             {
                 case SourceNames.Dice:
-                    return JobsScraper.GetFromDice(source);
+                    return DiceProvider.GetNewItems(source);
                 case SourceNames.Monster:
-                    return JobsScraper.GetFromMonster(source);
+                    return MonsterProvider.GetNewItems(source);
                 default:
                     return new List<AbstractItem>(); //throw exception?
             }

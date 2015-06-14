@@ -20,5 +20,13 @@ namespace Watcher.Extensions.V2
             return
                 new MetaDataObject(template.ID, template.DisplayName, template.FieldType, template.SelectorValues);
         }
+
+        public MetaDataObject Create(object value)
+        {
+            var mdo = Create();
+            mdo.SetValue(value);
+
+            return mdo;
+        }
     }
 }

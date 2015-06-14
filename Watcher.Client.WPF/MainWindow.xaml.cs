@@ -22,14 +22,9 @@ namespace Watcher.Client.WPF
     /// </summary>
     public partial class MainWindow : Window
     {
-        
+
+        #region Auto Updater
         private DispatcherTimer timer;
-       
-        private Properties.Settings AppConfigs = Properties.Settings.Default;
-            
-        private MainWindowViewModel viewModel;
-        
-        private delegate void AddedItemsHandler(List<AbstractItem> newItems, string error);
 
         public void ResetUpdateTimer()
         {
@@ -54,6 +49,12 @@ namespace Watcher.Client.WPF
             timer.Start();
         }
 
+        #endregion
+
+        private Properties.Settings AppConfigs = Properties.Settings.Default;
+        private MainWindowViewModel viewModel;
+
+        private delegate void AddedItemsHandler(List<AbstractItem> newItems, string error);
 
         public MainWindow()
         {
@@ -63,18 +64,17 @@ namespace Watcher.Client.WPF
             //Loads the window with default configurations
             RunConfigsWindow cf = new RunConfigsWindow();
 
-            while (true)
+            while (true) //Keep trying on errors
             {
                 try
                 {
-
-                    if (cf.IsFirstRun || cf.Retry)
+                    if (cf.IsFirstRun || cf.ShouldRetry)
                     {
                         cf.ShowDialog();
                     }
 
                     LoadFromConfigurations();
-                    cf.Retry = false;
+                    cf.ShouldRetry = false;
 
                     viewModel.DoUpdate();
 
@@ -83,14 +83,14 @@ namespace Watcher.Client.WPF
                 catch (Exception e)
                 {
                     var result = MessageBox.Show(
-                        "Error occured while initializing program: " + e.Message + ". Do you want to modify the configurations?", 
-                        "Error Loading Configurations", 
+                        "Error occured while initializing program: " + e.Message + ". Do you want to modify the configurations?",
+                        "Error Loading Configurations",
                         MessageBoxButton.YesNo);
 
                     if (result == MessageBoxResult.No)
                         Application.Current.Shutdown(0);
                     else
-                        cf.Retry = true; 
+                        cf.ShouldRetry = true;
                 }
             }
 
@@ -101,54 +101,26 @@ namespace Watcher.Client.WPF
         /// </summary>
         private void LoadFromConfigurations()
         {
-            //var datastore = new SQLiteDataStore(AppConfigs.DataStoreFile);
+            AbstractDataStore datastore = new SQLiteDataStoreV2(AppConfigs.DataStoreFile);
+            IProviderLoader providerLoader = new SuperProvidersLoader(AppConfigs.ProvidersPath);
 
-            var datastore = new SQLiteDataStoreV2(AppConfigs.DataStoreFile);
-            var providerLoader = new SuperProvidersLoader(AppConfigs.ProvidersPath);
-            
             var providers = providerLoader.GetProviders();
 
             DataManager.Initialize(datastore, providers);
 
             //Create the View Model
             viewModel = new MainWindowViewModel();
-            
             this.DataContext = viewModel;
-
             viewModel.RefreshViewModel();
 
             //Begin update timer
             ResetUpdateTimer();
         }
 
-        private void ItemsListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            viewModel.PerformItemAction(sender);
-        }
-
-        private AbstractProvider GetProvider(AbstractItem o)
-        {
-            return DataManager.Instance().GetProviders().First(p => p.GetProviderId() == o.Provider);
-        }
-
-        private void MarkSelectedButton_Click(object sender, RoutedEventArgs e)
-        {
-            List<AbstractItem> updated = new List<AbstractItem>();
-            foreach (ItemViewModel ivm in ItemsListBox.SelectedItems)
-            {
-                if (ivm.Data.New)
-                { 
-                    ivm.SetSource(ivm.Data.SetNew(false));
-                    updated.Add(ivm.Data);
-                }
-            }
-
-            DataManager.Instance().DataStore.UpdateItem(updated);
-            viewModel.SortedView.Refresh();
-        }
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
+            //TODO: Kill update?
             if (viewModel != null && viewModel.IsUpdating)
             {
                 e.Cancel = true;
@@ -156,25 +128,7 @@ namespace Watcher.Client.WPF
             else Application.Current.Shutdown(0);
         }
 
-        private void MarkAllButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            if (MessageBox.Show("Mark all items as read?", "Mark All Read", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
-                return;
-            
-            List<AbstractItem> updated = new List<AbstractItem>();
-            foreach (ItemViewModel ivm in ItemsListBox.Items)
-            {
-                if (ivm.Data.New)
-                {
-                    ivm.SetSource(ivm.Data.SetNew(false));
-                    updated.Add(ivm.Data);
-                }
-            }
-
-            DataManager.Instance().DataStore.UpdateItem(updated);
-            viewModel.SortedView.Refresh();
-        }
-
+        //These should be made into MVVM?
         private void ToggleSourcesButton_Click(object sender, RoutedEventArgs e)
         {
             SourcesGroupBox.Visibility = SourcesGroupBox.Visibility == Visibility.Visible
@@ -193,16 +147,30 @@ namespace Watcher.Client.WPF
             }
         }
 
-        private void LastUpdatedLabel_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void MarkAllButton_OnClick(object sender, RoutedEventArgs e)
         {
-            string message = String.Join("\r\n", DataManager.Instance().Messages);
+            if (MessageBox.Show("Mark all items as read?", "Mark All Read", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+                return;
 
-            var opts = DialogControlOptions.SetTextBoxMessageOptions(message, false);
+            List<AbstractItem> updated = new List<AbstractItem>();
+            foreach (ItemViewModel ivm in ItemsListBox.Items)
+            {
+                if (ivm.Data.New)
+                {
+                    ivm.Data.SetNew(false);
+                    updated.Add(ivm.Data);
+                }
+            }
 
-            var window = new Innouvous.Utils.DialogWindow.Windows.SimpleDialogWindow(opts);
-            window.Title = "Status";
+            DataManager.Instance().DataStore.UpdateItem(updated);
+            viewModel.SortedView.Refresh();
+        }
 
-            window.ShowDialog();
+
+        //This cannot be done easily with Command binding
+        private void ItemsListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            viewModel.PerformItemAction(sender);
         }
     }
 }

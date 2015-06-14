@@ -151,6 +151,6 @@ namespace Watcher.Client.WPF
         }
 
 
-        public bool Retry { get; set; }
+        public bool ShouldRetry { get; set; }
     }
 }

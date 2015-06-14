@@ -13,6 +13,11 @@ namespace Watcher.Core
     {
         private static DataManager _manager;
 
+        /// <summary>
+        /// Initialize the DataManager for use
+        /// </summary>
+        /// <param name="dataStore"></param>
+        /// <param name="providers"></param>
         public static void Initialize(AbstractDataStore dataStore, List<AbstractProvider> providers)
         {
             _manager = new DataManager(dataStore, providers);
@@ -55,29 +60,37 @@ namespace Watcher.Core
         {
             public List<AbstractItem> AddedItems { get; set; }
             public int UpdateTimeOut { get; set; }
-            public Action<List<AbstractItem>, string> Callback { get; set; }
+            public Action<bool, List<AbstractItem>, object> Callback { get; set; }
             public List<Thread> WorkerThreads { get; set; }
         }
 
-        public void UpdateItems(int updateTimeoutInMinutes = 2, Action<List<AbstractItem>, string> callback = null, bool multithread = true)
+        /// <summary>
+        /// Gets updates from the loaded Sources using their Providers
+        /// </summary>
+        /// <param name="updateTimeoutInMinutes"></param>
+        /// <param name="callback"></param>
+        /// <param name="multithread"></param>
+        public void UpdateItems(int updateTimeoutInMinutes = 2, Action<bool, List<AbstractItem>, object> callback = null, bool multithread = true)
         {
             //multithread = false;
 
             ClearMessages();
+
+            AddMessage("Updating...");
 
             List<AbstractItem> addedItems = new List<AbstractItem>();
 
             try
             {
                 List<Thread> threads = new List<Thread>();
-                //int threadCount = 0;
-
-
+                
+                //Looks for a the provider that can handle it and calls it
                 foreach (AbstractSource s in DataStore.Sources)
                 {
                     foreach (var p in providers)
                     {
                         if (!p.CanCheck(s)) continue;
+
 
                         if (multithread) //Add it as a thread
                             threads.Add(new Thread(() =>
@@ -96,10 +109,6 @@ namespace Watcher.Core
 
                 if (multithread)
                 {
-                    //var forceEnd = DateTime.Now.AddMinutes(updateTimeoutInMinutes);
-
-                    //threadCount = threads.Count;
-
                     UpdateParameters threadParams = new UpdateParameters()
                     {
                         Callback = callback,
@@ -113,17 +122,19 @@ namespace Watcher.Core
                     th.Start(threadParams);
                 }
                 else
-                    callback.Invoke(addedItems, null);
+                    callback.Invoke(true, addedItems, null);
             }
             catch (Exception e)
             {
 
-                callback.Invoke(addedItems, e.Message);
+                callback.Invoke(false, addedItems, e.Message);
             }
         }
 
         private void DoUpdates(object p)
         {
+            DateTime start = DateTime.Now;
+
             if (!(p is UpdateParameters))
                 throw new Exception("Parameter invalid");
 
@@ -142,12 +153,16 @@ namespace Watcher.Core
                 Thread.Sleep(2000);
                 if (DateTime.Now > timeout)
                 {
-                    paramz.Callback.Invoke(paramz.AddedItems, "Timed Out!");
+                    paramz.Callback.Invoke(false, paramz.AddedItems, "Timed Out!");
                     return;
                 }
             }
 
-            paramz.Callback.Invoke(paramz.AddedItems, null);
+            DateTime end = DateTime.Now;
+
+            TimeSpan ts = end - start;
+
+            paramz.Callback.Invoke(true, paramz.AddedItems, ts);
 
         }
 
@@ -158,6 +173,7 @@ namespace Watcher.Core
             return count;
         }
 
+        #region Update Messages
         private MTObservableCollection<string> messages = new MTObservableCollection<string>();
 
         public MTObservableCollection<string> Messages
@@ -177,20 +193,37 @@ namespace Watcher.Core
         {
             messages.Add(message);
         }
+        #endregion
 
+        /// <summary>
+        /// Actual logic for checking for updates.
+        /// This is usually run from separate threads by UpdateItems
+        /// </summary>
+        /// <param name="p"></param>
+        /// <param name="s"></param>
+        /// <param name="addedItems"></param>
         private void DoItemsCheck(AbstractProvider p, AbstractSource s, List<AbstractItem> addedItems)
         {
             try
             {
+                DateTime start = DateTime.Now;
+
                 var results = p.CheckForNewItems(s);
+
                 if (results != null)
                 {
                     results = dataStore.AddItems(results);
                     addedItems.AddRange(results);
                 }
 
-                AddMessage(String.Format("Source: {0}, New Items: {1}",
-                    s.GetDisplayName(), results == null ? 0 : results.Count));
+                DateTime end = DateTime.Now;
+
+                TimeSpan ts = end - start;
+
+                AddMessage(String.Format("Source: {0}, New Items: {1}, Total Time: {2}",
+                    s.GetDisplayName(), 
+                    results == null ? 0 : results.Count,
+                    (int) ts.TotalSeconds + " seconds"));
             }
             catch (Exception e)
             {

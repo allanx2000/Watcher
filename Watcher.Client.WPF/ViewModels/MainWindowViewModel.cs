@@ -12,6 +12,7 @@ using System.Linq;
 using System.Collections.Specialized;
 using Watcher.Extensions.V2;
 using Watcher.Extensions.Internal;
+using Innouvous.Utils.DialogWindow.Windows;
 
 namespace Watcher.Client.WPF.ViewModels
 {
@@ -125,7 +126,7 @@ namespace Watcher.Client.WPF.ViewModels
             set
             {
                 searchFilter = value;
-                searchFilterLower = value == null? null : value.ToLower();
+                searchFilterLower = value == null ? null : value.ToLower();
 
                 RaisePropertyChanged("SearchFilter");
             }
@@ -197,12 +198,12 @@ namespace Watcher.Client.WPF.ViewModels
             items.Clear();
 
             List<AbstractItem> results = DataManager.Instance().DataStore.Search(SearchFilter);
-            
+
             foreach (var i in results)
             {
                 Items.Add(new ItemViewModel(i, SVMLookup[i.GetSource()]));
             }
-            
+
             SortedView.Refresh();
             RefreshViewModel();
         }
@@ -339,6 +340,97 @@ namespace Watcher.Client.WPF.ViewModels
 
         #endregion
 
+        #region Other
+
+        public ICommand MarkSelectedCommand
+        {
+            get
+            {
+                return new CommandHelper(MarkSelected);
+            }
+        }
+
+        private void MarkSelected(object selected)
+        {
+            List<AbstractItem> updated = new List<AbstractItem>();
+
+            var items = selected as System.Collections.IList;
+
+            foreach (ItemViewModel ivm in items)
+            {
+                if (ivm.Data.New)
+                {
+                    ivm.Data.SetNew(false);
+                    updated.Add(ivm.Data);
+                }
+            }
+
+            DataManager.Instance().DataStore.UpdateItem(updated);
+            SortedView.Refresh();
+        }
+
+        /*
+        //TODO: Where is the items?
+        private void MarkAllButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("Mark all items as read?", "Mark All Read", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+                return;
+
+            List<AbstractItem> updated = new List<AbstractItem>();
+            foreach (ItemViewModel ivm in ItemsListBox.Items)
+            {
+                if (ivm.Data.New)
+                {
+                    ivm.Data.SetNew(false);
+                    updated.Add(ivm.Data);
+                }
+            }
+
+            DataManager.Instance().DataStore.UpdateItem(updated);
+            viewModel.SortedView.Refresh();
+        }*/
+
+        /*
+        private void ToggleSourcesButton_Click(object sender, RoutedEventArgs e)
+        {
+            SourcesGroupBox.Visibility = SourcesGroupBox.Visibility == Visibility.Visible
+                ? Visibility.Collapsed
+                : Visibility.Visible;
+        }
+
+        private void OptionsMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var window = new RunConfigsWindow();
+            window.ShowDialog();
+
+            if (!window.Cancelled)
+            {
+                LoadFromConfigurations();
+            }
+        }*/
+
+        public ICommand ShowLastUpdatedCommand
+        {
+            get
+            {
+                return new CommandHelper(ShowLastUpdated);
+            }
+        }
+
+        private void ShowLastUpdated()
+        {
+            string message = String.Join("\r\n", DataManager.Instance().Messages);
+
+            var opts = DialogControlOptions.SetTextBoxMessageOptions(message, false);
+
+            var window = new Innouvous.Utils.DialogWindow.Windows.SimpleDialogWindow(opts);
+            window.Title = "Status";
+
+            window.ShowDialog();
+        }
+
+        #endregion
+
         #region Items
 
 
@@ -368,7 +460,7 @@ namespace Watcher.Client.WPF.ViewModels
                     provider.DoAction(o.Data);
                     o.Data.SetNew(false);
                     DataManager.Instance().DataStore.UpdateItem(o.Data);
-                
+
                     SortedView.Refresh();
                 }
             }
@@ -401,28 +493,27 @@ namespace Watcher.Client.WPF.ViewModels
             DataManager.Instance().UpdateItems(AppConfigs.UpdateTimeout, OnFinishedUpdating);
         }
 
-        private void OnFinishedUpdating(List<AbstractItem> newItems, string error)
+        private void OnFinishedUpdating(bool success, List<AbstractItem> newItems, object data)
         {
             LastUpdated = DateTime.Now;
             IsUpdating = false;
 
-            foreach (var i in newItems)
+            if (success)
             {
-                try
+                foreach (var i in newItems)
                 {
+                    try
+                    {
 
-                    var svm = GetSVM(i.GetSource());
-                    Items.Add(new ItemViewModel(i, svm));
-                }
-                catch (Exception ex)
-                {
-                    DataManager.Instance().AddMessage(ex.Message);
+                        var svm = GetSVM(i.GetSource());
+                        Items.Add(new ItemViewModel(i, svm));
+                    }
+                    catch (Exception ex)
+                    {
+                        DataManager.Instance().AddMessage(ex.Message);
+                    }
                 }
             }
-
-            //show errors
-            /*if (error != null)
-                MessageBox.Show(error);*/
         }
 
         private void UpdateItemButton_Click(object sender, RoutedEventArgs e)
@@ -442,7 +533,7 @@ namespace Watcher.Client.WPF.ViewModels
         public MainWindowViewModel()
         {
             var sources = DataManager.Instance().DataStore.Sources;
-            
+
             PopulateSVMLookup(sources);
 
             DataManager.Instance().Messages.CollectionChanged += Messages_CollectionChanged;
@@ -468,7 +559,7 @@ namespace Watcher.Client.WPF.ViewModels
         {
             if (e != null && e.NewItems != null && e.NewItems.Count > 0)
             {
-                LatestUpdateMessage = (string) e.NewItems[0];
+                LatestUpdateMessage = (string)e.NewItems[0];
 
                 RaisePropertyChanged("LastUpdatedString");
             }
@@ -487,35 +578,35 @@ namespace Watcher.Client.WPF.ViewModels
             sortedView.SortDescriptions.Add(new SortDescription("AddedDate", ListSortDirection.Descending));
             sortedView.SortDescriptions.Add(new SortDescription("SourceName", ListSortDirection.Ascending));
             sortedView.SortDescriptions.Add(new SortDescription("Title", ListSortDirection.Ascending));
-            
+
             RaisePropertyChanged("SortedView");
         }
 
         void DoFilter(object sender, FilterEventArgs e)
         {
-            
+
             var item = e.Item as ItemViewModel;
 
             if (item != null)
             {
 
-            if (!String.IsNullOrEmpty(SearchFilter))
-            {
-                if (!item.Title.ToLower().Contains(searchFilterLower))
+                if (!String.IsNullOrEmpty(SearchFilter))
                 {
-                    e.Accepted = false;
-                    return;
+                    if (!item.Title.ToLower().Contains(searchFilterLower))
+                    {
+                        e.Accepted = false;
+                        return;
+                    }
                 }
-            }
 
-            if (!ShowAll)
-            {
-                if (!item.Data.New)
+                if (!ShowAll)
                 {
-                    e.Accepted = false;
-                    return;
+                    if (!item.Data.New)
+                    {
+                        e.Accepted = false;
+                        return;
+                    }
                 }
-            }
             }
 
             e.Accepted = true;
@@ -533,8 +624,8 @@ namespace Watcher.Client.WPF.ViewModels
             }
         }
 
-  
-        
+
+
     }
 
 }

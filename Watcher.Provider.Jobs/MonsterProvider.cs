@@ -93,7 +93,7 @@ namespace Watcher.Provider.Jobs
 
                         var pageItems = GetItemsOnPage(url, source);
 
-                        FilterAndAdd(pageItems, items, pageCounter, counterLock);
+                        FilterUtil.FilterAndAdd(pageItems, items, pageCounter, counterLock);
                     }
                 }
                 catch (Exception e)

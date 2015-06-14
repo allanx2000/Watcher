@@ -31,8 +31,7 @@ namespace Watcher.Provider.HundredZero
             };
         }
 
-        public override 
-            tions GetSourceOptions()
+        public override SourceOptions GetSourceOptions()
         {
             return SourceOptions.CreateFromParameters(true, false);
         }

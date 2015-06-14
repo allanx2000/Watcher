@@ -48,7 +48,6 @@
     <Compile Include="FilterUtil.cs" />
     <Compile Include="JobItem.cs" />
     <Compile Include="JobsProvider.cs" />
-    <Compile Include="JobsScraper.cs" />
     <Compile Include="JobsSource.cs" />
     <Compile Include="MonsterProvider.cs">
       <SubType>Code</SubType>
