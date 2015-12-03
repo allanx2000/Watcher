@@ -28,7 +28,7 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ProductName>Watcher</ProductName>
     <PublisherName>innouvous Technologies</PublisherName>
-    <ApplicationRevision>17</ApplicationRevision>
+    <ApplicationRevision>19</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>

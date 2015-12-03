@@ -187,24 +187,77 @@ namespace Watcher.Client.WPF.ViewModels
             }
         }
 
+        private bool isSearch = false;
+        public bool IsSearching
+        {
+            get
+            {
+                return isSearch;
+            }
+            set
+            {
+                isSearch = value;
+                RaisePropertyChanged("IsSearching");
+                RaisePropertyChanged("NotSearching");
+                RaisePropertyChanged("SearchText");
+            }
+        }
+
+        public bool NotSearching
+        {
+            get
+            {
+                return !IsSearching;
+            }
+        }
+
+        public string SearchText
+        {
+            get
+            {
+                return IsSearching ? "Clear" : "Search";
+            }
+        }
+
         public void ClearSearch()
         {
             SearchFilter = null;
-            LoadDefaultItems();
+
+            items.Clear();
+
+            var defaultItems = DataManager.Instance().DataStore.Items;
+
+            foreach (var i in defaultItems)
+            {
+                if (i != null)
+                {
+                    items.Add(new ItemViewModel(i, SVMLookup[i.GetSource()]));
+                }
+            }
+            
         }
 
         private void DoSearch()
         {
-            items.Clear();
-
-            List<AbstractItem> results = DataManager.Instance().DataStore.Search(SearchFilter);
-
-            foreach (var i in results)
+            if (IsSearching)
+                ClearSearch();
+            else
             {
-                Items.Add(new ItemViewModel(i, SVMLookup[i.GetSource()]));
-            }
+                if (String.IsNullOrEmpty(SearchFilter.Trim()))
+                    throw new Exception("No search string entered");
 
+                items.Clear();
+                List<AbstractItem> results = DataManager.Instance().DataStore.Search(SearchFilter);
+
+                foreach (var i in results)
+                {
+                    Items.Add(new ItemViewModel(i, SVMLookup[i.GetSource()]));
+                }
+            }
+            
             SortedView.Refresh();
+            IsSearching = !IsSearching;
+
             RefreshViewModel();
         }
 

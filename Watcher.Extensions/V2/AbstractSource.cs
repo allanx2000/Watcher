@@ -40,10 +40,10 @@ namespace Watcher.Extensions.V2
                 MetaData.Add(key, new MetaDataObject(key, key.ToString()));
             }
 
-            MetaData[key].SetValue(value);
+            //MetaData[key].SetValue(value);
         }
 
-        private string SerializeColor(Color color)
+        public static string SerializeColor(Color color)
         {
             //A R G B
             return String.Join(" ", color.A, color.R, color.G, color.B);
@@ -77,7 +77,7 @@ namespace Watcher.Extensions.V2
             }
         }
 
-        public AbstractSource SetUrl(string url)
+        public virtual AbstractSource SetUrl(string url)
         {
             var valid = true;
 
@@ -90,7 +90,7 @@ namespace Watcher.Extensions.V2
             return this;
         }
 
-        public AbstractSource SetUpdatesColor(Color color)
+        public virtual AbstractSource SetUpdatesColor(Color color)
         {
             this.AddProtectedMetaData(UPDATES_COLOR, SerializeColor(color));
 
@@ -184,14 +184,31 @@ namespace Watcher.Extensions.V2
                 return MetaData[key].Value;
             else return null;
         }
+        
+        /// <summary>
+        /// Gets the entire metadata dictionary including protected
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<string, MetaDataObject> GetMetaData()
+        {
+            var clone = new Dictionary<string, MetaDataObject>(MetaData);
+
+            foreach (string field in ProtectedValues)
+            {
+                clone.Remove(field);
+            }
+
+            return clone;
+        }
 
         /// <summary>
-        /// Gets the entire metadata dictionary
+        /// Gets the entire metadata dictionary including protected
         /// </summary>
         /// <returns></returns>
         public Dictionary<string,MetaDataObject> GetMetaData()
         {
             var clone = new Dictionary<string, MetaDataObject>(MetaData);
+
             foreach (string field in ProtectedValues)
             {
                 clone.Remove(field);
@@ -254,14 +271,14 @@ namespace Watcher.Extensions.V2
         /// </summary>
         /// <param name="metadata"></param>
         /// <returns></returns>
-        public AbstractSource SetMetaData(Dictionary<string, MetaDataObject> metadata)
+        public virtual AbstractSource SetMetaData(Dictionary<string, MetaDataObject> metadata)
         {
             this.MetaData = metadata;
 
             return this;
         }
 
-        public void CopyTo(AbstractSource outputSource)
+        public virtual void CopyTo(AbstractSource outputSource)
         {
             outputSource.SetMetaData(this.MetaData);
             outputSource.SetProviderID(this.ProviderID);
@@ -269,7 +286,7 @@ namespace Watcher.Extensions.V2
         }
 
 
-        public void SetMetaData(List<MetaDataObject> metaData)
+        public virtual void SetMetaData(List<MetaDataObject> metaData)
         {
             Dictionary<string, MetaDataObject> dict = new Dictionary<string, MetaDataObject>();
             

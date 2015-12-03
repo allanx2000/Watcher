@@ -15,7 +15,7 @@ namespace Watcher.Extensions.V2.Adapters
         {
             return src;
         }
-
+        
         public static SourceAdapter CreateSourceAdapter(V1.AbstractSource src, V1.AbstractProvider provider)
         {
             GenericSource gs = new GenericSource(src.SourceName, src.ProviderID);
@@ -56,10 +56,11 @@ namespace Watcher.Extensions.V2.Adapters
         {
             //this.provider = provider;
             this.SetMetaData(src.GetMetaData());
+
             this.SetProviderID(src.ProviderID);
             this.SetSourceName(src.SourceName);
             
         }
-
+        
     }
 }

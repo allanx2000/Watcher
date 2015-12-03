@@ -205,6 +205,28 @@ namespace Watcher.DataStore.SQLite
         }
 
         private const char MetaDelim = '|';
+        
+        private string SerializeMeta(AbstractSource source)
+        {
+            Dictionary<string, object> values = new Dictionary<string, object>();
+
+            foreach (var kv in source.GetMetaData())
+            {
+                if (kv.Value != null)
+                    values.Add(kv.Key, kv.Value.Value);
+            }
+
+            if (source.UpdatesColor != null)
+                values.Add(AbstractSource.UPDATES_COLOR, AbstractSource.SerializeColor(source.UpdatesColor));
+            
+            if (!String.IsNullOrEmpty(source.Url))
+                values.Add(AbstractSource.URL, source.Url);
+
+
+            string meta = String.Join(MetaDelim.ToString(), from kv in values select kv.Key + "=" + kv.Value.ToString());
+
+            return meta;
+        }
 
         private string SerializeMeta(Dictionary<string, MetaDataObject> dictionary)
         {
@@ -242,8 +264,10 @@ namespace Watcher.DataStore.SQLite
             string command;
 
             if (source.ID != null)
-                command = LoadCommandFT("UpdateSource", SourcesTable, source.SourceName, SerializeMeta(source.GetMetaData()),
+            {
+                command = LoadCommandFT("UpdateSource", SourcesTable, source.SourceName, SerializeMeta(source),
                     source.ID.Value);
+            }
             else
                 command = LoadCommandFT("InsertSource", SourcesTable, source.ProviderID, source.SourceName, SerializeMeta(source.GetMetaData()));
 
