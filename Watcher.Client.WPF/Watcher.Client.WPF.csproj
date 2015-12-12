@@ -112,6 +112,7 @@
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\MetaDataObjectViewModel.cs" />
     <Compile Include="ViewModels\RunConfigsViewModel.cs" />
+    <Compile Include="ViewModels\SourceEditorViewModel.cs" />
     <Compile Include="ViewModels\SourceViewModel.cs" />
     <Page Include="ColorPicker.xaml">
       <SubType>Designer</SubType>

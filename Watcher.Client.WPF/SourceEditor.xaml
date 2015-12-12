@@ -34,30 +34,30 @@
                 </Style>
             </StackPanel.Resources>
 
-            <StackPanel Name="IDPanel" Orientation="Horizontal">
+            <StackPanel Visibility="{Binding IDVisibility}" Orientation="Horizontal" >
                 <Label Style="{StaticResource FieldLabel}">ID:</Label>
-                <Label Name="IDField">{ID}</Label>
+                <Label Content="{Binding IDText}"/>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
                 <Label Style="{StaticResource FieldLabel}">Provider:</Label>
-                <ComboBox Name="TypeComboBox" Width="200" SelectionChanged="TypeComboBox_SelectionChanged" />
+                <ComboBox Width="200" SelectedItem="{Binding SelectedProvider}" IsEnabled="{Binding CanSelectProvider}" ItemsSource="{Binding Providers}" DisplayMemberPath="ProviderId" />
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal" Name="NamePanel">
+            <StackPanel Orientation="Horizontal" Name="NamePanel" Visibility="{Binding NaameVisibility}">
                 <Label Style="{StaticResource FieldLabel}">Name:</Label>
-                <TextBox Style="{StaticResource FieldText}" Name="NameTextBox" />
+                <TextBox Style="{StaticResource FieldText}" Text="{Binding Name}" />
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal" Name="URLPanel">
+            <StackPanel Orientation="Horizontal" Name="URLPanel" Visibility="{Binding URLVisibility}">
                 <Label Style="{StaticResource FieldLabel}">URL:</Label>
-                <TextBox Style="{StaticResource FieldText}" Name="URLTextBox" />
+                <TextBox Style="{StaticResource FieldText}" Text="{Binding URL}"/>
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal" Name="ColorPanel">
+            <StackPanel Orientation="Horizontal" Name="ColorPanel" >
                 <Label Style="{StaticResource FieldLabel}">Color:</Label>
                 <Border BorderThickness="2" BorderBrush="Black">
-                    <Rectangle Name="ColorPreviewRectangle" Width="60" MouseDown="ColorPreviewRectangle_MouseDown" Fill="White" StrokeThickness="5" />
+                    <Rectangle Width="60" MouseDown="Rectangle_MouseDown" Fill="{Binding PreviewColor}" StrokeThickness="5" />
                 </Border>
             </StackPanel>
         </StackPanel>
@@ -71,13 +71,12 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
             </Grid>
-            </ScrollViewer>
-
+            </ScrollViewer> 
         </GroupBox>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Name="OKButton" Click="OKButton_Click">OK</Button>
-            <Button Name="CancelButton" Click="CancelButton_Click">Cancel</Button>
+            <Button Command="{Binding OKCommand}">OK</Button>
+            <Button Command="{Binding CancelCommand}">Cancel</Button>
         </StackPanel>
     </Grid>
 </Window>
