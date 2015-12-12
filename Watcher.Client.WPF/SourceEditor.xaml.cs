@@ -20,10 +20,10 @@ namespace Watcher.Client.WPF
     /// </summary>
     public partial class SourceEditor : Window
     {
-        private AbstractDataStore dataStore;
+        private AbstractDataStore datastore;
         private List<AbstractProvider> providers;
 
-        private Color selectedColor = AbstractSource.DefaultColor;
+        private Color selectedColor = SourceViewModel.DefaultColor;
 
         private SourceViewModel sourceViewModel;
 
@@ -64,7 +64,7 @@ namespace Watcher.Client.WPF
         {
             this.providers = providers;
 
-            this.dataStore = dataStore;
+            this.datastore = dataStore;
 
             InitializeComponent();
 
@@ -79,14 +79,14 @@ namespace Watcher.Client.WPF
             
             IDField.Content = source.ID.Value;
             NameTextBox.Text = source.SourceName;
-            URLTextBox.Text = source.Url;
+            URLTextBox.Text = SourceViewModel.GetUrl(source);
 
             TypeComboBox.SelectedItem = providers.First(p => p.ProviderId == source.ProviderID);
             TypeComboBox.IsEnabled = false;
 
             IDPanel.Visibility = System.Windows.Visibility.Visible;
 
-            selectedColor = source.UpdatesColor;
+            selectedColor = SourceViewModel.GetColor(source);
 
             ColorPreviewRectangle.Fill = new SolidColorBrush(selectedColor);
 
@@ -135,26 +135,34 @@ namespace Watcher.Client.WPF
                     }
                 }
 
-
+                var newSource = selectedProvider.CreateNewSource(
+                    selectedProvider.HasUniqueName ? NameTextBox.Text : null
+                    , null, meta);
+                /*
                 var newSource = selectedProvider
                         .CreateNewSource(
                             selectedProvider.HasUniqueName ? NameTextBox.Text : null,
                             selectedProvider.HasUrlField ? URLTextBox.Text : null,
                             meta);
+                            */
 
-                newSource.SetUpdatesColor(selectedColor);
+                //TODO: Should use SVM instead of Abstract?
+                if (selectedProvider.HasUrlField)
+                    newSource.SetMetaDataValue(SourceViewModel.URL, URLTextBox.Text);
+
+                newSource.SetMetaDataValue(SourceViewModel.UPDATES_COLOR, SourceViewModel.SerializeColor(selectedColor));
 
                 if (sourceViewModel != null)
                 {
                     newSource.SetID(sourceViewModel.Data.ID.Value);
 
-                    dataStore.UpdateSource(newSource);
+                    datastore.UpdateSource(newSource);
 
                     sourceViewModel.SetSource(newSource);
                 }
                 else
                 {
-                    dataStore.AddSource(newSource);
+                    datastore.AddSource(newSource);
 
                     sourceViewModel = new SourceViewModel(newSource);
                 }

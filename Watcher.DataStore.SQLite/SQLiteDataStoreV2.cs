@@ -215,14 +215,7 @@ namespace Watcher.DataStore.SQLite
                 if (kv.Value != null)
                     values.Add(kv.Key, kv.Value.Value);
             }
-
-            if (source.UpdatesColor != null)
-                values.Add(AbstractSource.UPDATES_COLOR, AbstractSource.SerializeColor(source.UpdatesColor));
             
-            if (!String.IsNullOrEmpty(source.Url))
-                values.Add(AbstractSource.URL, source.Url);
-
-
             string meta = String.Join(MetaDelim.ToString(), from kv in values select kv.Key + "=" + kv.Value.ToString());
 
             return meta;

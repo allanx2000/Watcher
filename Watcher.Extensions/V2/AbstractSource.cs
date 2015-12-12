@@ -13,107 +13,6 @@ namespace Watcher.Extensions.V2
         
         private Dictionary<string, MetaDataObject> MetaData = new Dictionary<string, MetaDataObject>();
 
-        public static readonly Color DefaultColor = Colors.Black;
-
-        #region Meta Values
-        public const string UPDATES_COLOR = "UpdatesColor";
-        public const string URL = "Url";
-
-        private static readonly List<string> ProtectedValues = new List<string>()
-        {
-            UPDATES_COLOR,
-            URL
-        };
-
-        public string Url
-        {
-            get
-            {
-                return MetaData.ContainsKey(URL) && MetaData[URL].Value  != null? MetaData[URL].Value.ToString() : null;
-            }
-        }
-
-        private void AddProtectedMetaData(string key, object value)
-        {
-            if (!MetaData.ContainsKey(key))
-            {
-                MetaData.Add(key, new MetaDataObject(key, key.ToString()));
-            }
-
-            //MetaData[key].SetValue(value);
-        }
-
-        public static string SerializeColor(Color color)
-        {
-            //A R G B
-            return String.Join(" ", color.A, color.R, color.G, color.B);
-        }
-
-        public SolidColorBrush UpdatesColorBrush
-        {
-            get
-            {
-                return new SolidColorBrush(UpdatesColor);
-            }
-        }
-
-        public Color UpdatesColor
-        {
-            get
-            {
-                try
-                {
-                    if (MetaData.ContainsKey(UPDATES_COLOR))
-                        return Deserialize(MetaData[UPDATES_COLOR].Value.ToString());
-                    else
-                        return Colors.Black;
-                }
-                catch
-                {
-                    ClearMetaDataValue(UPDATES_COLOR);
-
-                    return Colors.Black;
-                }
-            }
-        }
-
-        public virtual AbstractSource SetUrl(string url)
-        {
-            var valid = true;
-
-            if (valid)
-            {
-                this.AddProtectedMetaData(URL, url);
-            }
-            else throw new Exception("Not a valid URL");
-            
-            return this;
-        }
-
-        public virtual AbstractSource SetUpdatesColor(Color color)
-        {
-            this.AddProtectedMetaData(UPDATES_COLOR, SerializeColor(color));
-
-            return this;
-        }
-
-        
-        private Color Deserialize(string p)
-        {
-            var parts = p.Split(' ');
-            int idx = 0;
-
-            Color c = new Color();
-            
-            c.A = Convert.ToByte(parts[idx++]);
-            c.R = Convert.ToByte(parts[idx++]);
-            c.G = Convert.ToByte(parts[idx++]);
-            c.B = Convert.ToByte(parts[idx++]);
-
-            return c;
-        }
-
-        #endregion
 
         public virtual string GetDisplayName()
         {
@@ -160,6 +59,12 @@ namespace Watcher.Extensions.V2
             else throw new Exception(key + " is protected and cannot be explicitly set");
             */
             
+            if (!MetaData.ContainsKey(key))
+            {
+                //TODO: some how SourceEditor sould create these
+                MetaData.Add(key, new MetaDataObject(key, key, MetaDataObject.Type.String));
+            }
+
             MetaData[key].SetValue(value);
             
             return this;
@@ -193,30 +98,15 @@ namespace Watcher.Extensions.V2
         {
             var clone = new Dictionary<string, MetaDataObject>(MetaData);
 
+            /*
             foreach (string field in ProtectedValues)
             {
                 clone.Remove(field);
-            }
+            }*/
 
             return clone;
         }
-
-        /// <summary>
-        /// Gets the entire metadata dictionary including protected
-        /// </summary>
-        /// <returns></returns>
-        public Dictionary<string,MetaDataObject> GetMetaData()
-        {
-            var clone = new Dictionary<string, MetaDataObject>(MetaData);
-
-            foreach (string field in ProtectedValues)
-            {
-                clone.Remove(field);
-            }
-
-            return clone;
-        }
-
+        
 
         public AbstractSource SetID(int id)
         {
@@ -228,13 +118,6 @@ namespace Watcher.Extensions.V2
         public AbstractSource SetProviderID(string providerId)
         {
             ProviderID = providerId;
-
-            return this;
-        }
-
-        protected AbstractSource SetURL(string url)
-        {
-            AddProtectedMetaData(URL, url);
 
             return this;
         }

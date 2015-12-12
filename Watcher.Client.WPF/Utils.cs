@@ -9,6 +9,8 @@ namespace Watcher.Client.WPF
 {
     class Utils
     {
+
+
         public static void ShowErrorMessage(Window owner, Exception e)
         {
             MessageBox.Show(owner, e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);

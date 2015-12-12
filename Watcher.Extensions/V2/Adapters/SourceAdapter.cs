@@ -36,11 +36,6 @@ namespace Watcher.Extensions.V2.Adapters
             }
 
             gs.SetMetaData(newMeta);
-
-            gs.SetUrl(src.Url);
-            gs.SetUpdatesColor(src.UpdatesColor);
-
-
             
             if (src.ID.HasValue)
                 gs.SetID(src.ID.Value);

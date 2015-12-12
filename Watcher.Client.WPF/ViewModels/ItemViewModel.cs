@@ -27,7 +27,7 @@ namespace Watcher.Client.WPF.ViewModels
         {
             get
             {
-                return svm.Data.UpdatesColorBrush;
+                return svm.UpdatesColorBrush;
             }
         }
 
