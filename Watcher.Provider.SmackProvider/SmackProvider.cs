@@ -1,115 +1,142 @@
-﻿using System.Diagnostics;
-using System.Runtime.Versioning;
-using HtmlAgilityPack;
+﻿using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 using System.Net;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
-using Watcher.Extensions;
+using Watcher.Extensions.V2;
 
 namespace Watcher.Provider.Smack
 {
-    public class Post : AbstractItem
-    {
-        public Post(AbstractSource source, string title, string link, int? id = null, bool isNew = true,
-            DateTime? addedDate = null)
-            : base(source, title, link, id, isNew, addedDate)
-        {
-
-        }
-    }
-
     public class SmackProvider : AbstractProvider
     {
         public const string PROVIDER = "SmackProvider";
+        
+        public const string META_PAGES = "Pages";
+        
+        public const string META_SOURCE = "Source";
 
-        private const string ChinaSite = "http://www.chinasmack.com/";
-        private const string JapanSite = "http://www.japancrush.com/";
+        private int DefaultPages = 3;
 
-        private const string ChinaType = "ChinaSMACK";
-        private const string JapanType = "JapanCRUSH";
-
-        public SmackProvider()
-            : base(PROVIDER)
+        public SmackProvider() : base(PROVIDER, false, false)
         {
-
         }
 
-        private const string Site = "Site";
-        public override List<string> GetMetaFields()
+        public static class SourceNames
         {
-            return new List<string> { Site };
+            public const String ChinaSmack = "ChinaSmack";
+            public const String JapanCrush = "JapanCrush";
         }
 
-        protected override AbstractSource DoCreateNewSource(string name, string url, Dictionary<string, string> metaData)
+        //NOTE: Validation depends on selected source type
+
+        public static readonly List<string> Sources = new List<string>()
         {
-            if (metaData.ContainsKey(Site))
+            SourceNames.ChinaSmack,
+            SourceNames.JapanCrush,
+        };
+
+        public static readonly MetaDataObjectBuilder MetaSource = new MetaDataObjectBuilder(META_SOURCE, "Source", MetaDataObject.Type.Selector, Sources);
+        public static readonly MetaDataObjectBuilder MetaPages = new MetaDataObjectBuilder(META_PAGES, "Pages");
+        
+        public override List<MetaDataObject> GetMetaFields()
+        {
+            List<MetaDataObject> TEMPLATE = new List<MetaDataObject>()
             {
-                if (metaData[Site].Equals(JapanType, StringComparison.OrdinalIgnoreCase))
-                    metaData[Site] = JapanType;
-                else if (metaData[Site].Equals(ChinaType, StringComparison.OrdinalIgnoreCase))
-                    metaData[Site] = ChinaType;
-                else
-                    ThrowBadSiteException();
-            }
-            else
-                ThrowBadSiteException();
+                MetaSource.Create(),
+                MetaPages.Create(),
+            };
 
-            var source = new GenericSource(metaData[Site], PROVIDER);
-            source.SetMetaData(metaData);
-
-            return source;
+            return TEMPLATE;
         }
 
-        private void ThrowBadSiteException()
+        protected override AbstractSource DoCreateNewSource(string name, string url, List<MetaDataObject> templateAndValues)
         {
-            throw new Exception("Site must be: " + String.Join(", ", ChinaType, JapanType));
+            string value;
+            int tmp;
+
+            MetaDataObject source = MetaDataObject.FindIn(templateAndValues, SmackProvider.META_SOURCE);
+            value = source.GetValueAsString();
+
+            if (String.IsNullOrEmpty(value))
+                throw new Exception("No source selected");
+
+            AbstractSource s = new SmackSource(value);
+
+            MetaDataObject pages = MetaDataObject.FindIn(templateAndValues, SmackProvider.META_PAGES);
+            value = pages.GetValueAsString();
+
+            if (String.IsNullOrEmpty(value))
+                tmp = DefaultPages;
+            else
+                int.TryParse(value, out tmp);
+
+            pages.SetValue(tmp);
+            
+            s.SetMetaData(templateAndValues);
+
+            return s;
+            
         }
 
-        private const int MaxPages = 1;
+        public override AbstractSource CastSource(GenericSource src)
+        {
+            return SmackSource.CreateFrom(src);
+        }
+
 
         protected override List<AbstractItem> GetNewItems(AbstractSource source)
         {
+            SmackSource js = SmackSource.CreateFrom(source);
+            return GetNewItems(js);
+        }
+
+        private const string ChinaBase = "http://www.chinasmack.com/page/";
+        private const string JapanBase = "http://www.japancrush.com/page/";
+
+        private const string ChinaSelect = "//div[@class='excerpt-post-title']/a";
+        private const string JapanSelect = "//div[@class='excerpt-post-title']/a";
+
+
+        private List<AbstractItem> GetNewItems(SmackSource source)
+        {
+            string BaseUrl;
+            string Selector;
+
+            if (source.Source == SourceNames.ChinaSmack.ToString())
+            {
+                BaseUrl = ChinaBase;
+                Selector = ChinaSelect;
+            }
+            else if (source.Source == SourceNames.JapanCrush.ToString())
+            {
+                BaseUrl = JapanBase;
+                Selector = JapanSelect;
+            }
+            else
+                throw new Exception(source + "not accepted");
+
             List<AbstractItem> items = new List<AbstractItem>();
 
             WebClient wc = new WebClient();
-            for (int p = 1; p <= MaxPages; p++)
+
+            int max = Convert.ToInt32(source.Pages);
+            for (int p = 1; p <= max; p++)
             {
 
-                string url;
+                string url = BaseUrl + p;
                 string page;
-
-                switch (source.GetMetaDataValue(Site))
-                {
-                    case JapanType:
-                        url = JapanSite;
-                        break;
-                    case ChinaType:
-                    default:
-                        url = ChinaSite;
-                        break;
-                }
-
-                url += "/page/" + p;
-
+                
                 page = wc.DownloadString(url);
 
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(page);
 
-                var itemNodes = doc.DocumentNode.SelectNodes("//div[@id='archive']");
-                itemNodes = itemNodes[0].SelectNodes(".//li");
-
-                foreach (var node in itemNodes)
+                var itemNodes = doc.DocumentNode.SelectNodes(Selector);
+                
+                foreach (var a in itemNodes)
                 {
                     try
                     {
-
-                        var a = node.SelectSingleNode(".//div[@class='excerpt-post-title']/a");
-
                         string name = WebUtility.HtmlDecode(a.InnerText);
                         string link = a.Attributes["href"].Value;
 
@@ -121,17 +148,13 @@ namespace Watcher.Provider.Smack
                     }
                 }
             }
+            
             return items;
         }
 
         public override void DoAction(AbstractItem item)
         {
             Process.Start(item.ActionContent);
-        }
-
-        public override SourceOptions GetSourceOptions()
-        {
-            return SourceOptions.CreateFromParameters(false, false);
         }
     }
 }

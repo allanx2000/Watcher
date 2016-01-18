@@ -117,10 +117,9 @@ namespace Watcher.Client.WPF.ViewModels
                     //URLPanel.Visibility = provider.HasUrlField ? Visibility.Visible : Visibility.Collapsed;
 
                     //This is to support restoring values from existing, need to rewrite and separate, make clearer?
-                    List<MetaDataObject> meta = originalSource != null ? 
+                    List<MetaDataObject> meta = originalSource != null ?
                         new List<MetaDataObject>(originalSource.Data.GetMetaData().Values) :
                         value.GetMetaFields();
-                    
 
                     //TODO: Should create everything here, Grid should just be empty
                     optionsGrid.Children.Clear();
@@ -137,8 +136,13 @@ namespace Watcher.Client.WPF.ViewModels
 
                     foreach (var m in meta)
                     {
+                        //TODO: Temp hack to remove these custom fields, but need to find better, holistic way; redesign framework?
+                        if (m.ID == SourceViewModel.UPDATES_COLOR || m.ID == SourceViewModel.URL)
+                            continue;
+
                         RowDefinition rd = new RowDefinition() { Height = GridLength.Auto };
                         optionsGrid.RowDefinitions.Add(rd);
+                        
 
                         Label l = new Label();
                         l.Content = m.DisplayName;
@@ -246,7 +250,8 @@ namespace Watcher.Client.WPF.ViewModels
             //TypeComboBox.ItemsSource = providers;
             //TypeComboBox.DisplayMemberPath = "ProviderId";
             
-            SetOriginalSource(svm);
+            if (svm != null)
+                SetOriginalSource(svm);
         }
 
         private void SetOriginalSource(SourceViewModel svm)
