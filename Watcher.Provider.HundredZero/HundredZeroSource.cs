@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Watcher.Extensions;
+using Watcher.Extensions.V2;
 
 namespace Watcher.Provider.HundredZero
 {

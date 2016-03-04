@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using V1 = Watcher.Extensions;
+using V1 = Watcher.Extensions.V1;
 
 namespace Watcher.Extensions.V2.Adapters
-{
+{ 
+    [Obsolete]
     public class SourceAdapter : AbstractSource
     {
         private V1.AbstractSource src;
@@ -18,7 +19,10 @@ namespace Watcher.Extensions.V2.Adapters
         
         public static SourceAdapter CreateSourceAdapter(V1.AbstractSource src, V1.AbstractProvider provider)
         {
-            GenericSource gs = new GenericSource(src.SourceName, src.ProviderID);
+            string strDisabled = src.GetMetaDataValue(AbstractSource.DISABLED);
+            bool disabled = strDisabled == null ? false : Convert.ToBoolean(strDisabled);
+
+            GenericSource gs = new GenericSource(src.SourceName, src.ProviderID, disabled);
             
             //Update Meta
             Dictionary<string, MetaDataObject> newMeta = new Dictionary<string, MetaDataObject>();

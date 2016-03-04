@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using Watcher.Interop;
 
 namespace Watcher.Extensions.V2
 {
-    public abstract class AbstractProvider
+    public abstract class AbstractProvider : IProvider
     {
         private readonly string providerId;
 
@@ -33,19 +34,19 @@ namespace Watcher.Extensions.V2
         /// This returns the ALL fields that the Provider requires/uses
         /// </summary>
         /// <returns></returns>
-        public virtual List<MetaDataObject> GetMetaFields()
+        public virtual List<IMetaDataObject> GetMetaFields()
         {
-            return new List<MetaDataObject>();
+            return new List<IMetaDataObject>();
         }
-        public AbstractSource CreateNewSource(string name, string url, Dictionary<string, MetaDataObject> metaData)
+        public ISource CreateNewSource(string name, string url, Dictionary<string, IMetaDataObject> metaData)
         {
-            var values = new List<MetaDataObject>(metaData.Values);
+            var values = new List<IMetaDataObject>(metaData.Values);
 
             return CreateNewSource(name, url, values);
         }
 
         //TODO: CHANGE
-        public AbstractSource CreateNewSource(string name, string url, List<MetaDataObject> metaData)
+        public ISource CreateNewSource(string name, string url, List<IMetaDataObject> metaData)
         {
             var s = DoCreateNewSource(name, url, metaData);
             
@@ -62,9 +63,9 @@ namespace Watcher.Extensions.V2
         /// <param name="url"></param>
         /// <param name="metaData">Meta to be used for reference only</param>
         /// <returns></returns>
-        protected abstract AbstractSource DoCreateNewSource(string name, string url, List<MetaDataObject> metaData);
+        protected abstract ISource DoCreateNewSource(string name, string url, List<IMetaDataObject> metaData);
         
-        public List<AbstractItem> CheckForNewItems(AbstractSource source)
+        public List<IDataItem> CheckForNewItems(ISource source)
         {
             if (this.providerId != source.ProviderID)
                 return null; //throw new Exception(String.Format("Source is not supported by this provider."));
@@ -72,19 +73,19 @@ namespace Watcher.Extensions.V2
                 return GetNewItems(source);
         }
 
-        protected abstract List<AbstractItem> GetNewItems(AbstractSource source);
+        protected abstract List<IDataItem> GetNewItems(ISource source);
 
-        public bool CanCheck(AbstractSource source)
+        public bool CanCheck(ISource source)
         {
             return source.ProviderID == this.providerId;
         }
 
-        public virtual AbstractSource CastSource(GenericSource src)
+        public virtual ISource CastSource(ISource src)
         {
             return src;
         }
 
-        public abstract void DoAction(AbstractItem item);
+        public abstract void DoAction(IDataItem item);
 
     }
 }

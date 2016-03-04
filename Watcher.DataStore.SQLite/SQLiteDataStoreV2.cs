@@ -10,6 +10,7 @@ using System.Runtime.Serialization;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using Watcher.Extensions.V2;
+using Watcher.Interop;
 
 namespace Watcher.DataStore.SQLite
 {
@@ -92,7 +93,7 @@ namespace Watcher.DataStore.SQLite
             return result;
         }
 
-        private Dictionary<int, AbstractSource> sourceLookup = new Dictionary<int, AbstractSource>();
+        private Dictionary<int, ISource> sourceLookup = new Dictionary<int, ISource>();
 
         protected override List<GenericSource> LoadSources()
         {
@@ -104,7 +105,7 @@ namespace Watcher.DataStore.SQLite
 
             foreach (DataRow row in results.Rows)
             {
-                GenericSource source = new GenericSource(row["Name"].ToString(), row["ProviderID"].ToString());
+                GenericSource source = new GenericSource(row["Name"].ToString(), row["ProviderID"].ToString(), false);
                 source.SetID(Int32.Parse(row["ID"].ToString()));
                 source.SetMetaData(DeserializeMeta(row["MetaData"].ToString()));
 
@@ -119,7 +120,7 @@ namespace Watcher.DataStore.SQLite
 
         private readonly DateTime LatestCutOff = DateTime.Today.AddDays(-5);
 
-        protected override List<AbstractItem> LoadItems()
+        protected override List<IDataItem> LoadItems()
         {
             
             string evictString = SQLUtils.ToSQLDateTime(LatestCutOff);
@@ -128,15 +129,15 @@ namespace Watcher.DataStore.SQLite
 
             DataTable results = sqlWrapper.ExecuteSelect(command);
 
-            List<AbstractItem> items = LoadItemsFromTable(results);
+            List<IDataItem> items = LoadItemsFromTable(results);
 
 
             return items;
         }
 
-        private List<AbstractItem> LoadItemsFromTable(DataTable results)
+        private List<IDataItem> LoadItemsFromTable(DataTable results)
         {
-            List<AbstractItem> items = new List<AbstractItem>();
+            List<IDataItem> items = new List<IDataItem>();
 
             foreach (DataRow r in results.Rows)
             {
@@ -151,7 +152,7 @@ namespace Watcher.DataStore.SQLite
 
                     if (sourceLookup.ContainsKey(srcId))
                     {
-                        AbstractItem i = AbstractItem.CreateGenericItem(id, sourceLookup[srcId],
+                        IDataItem i = AbstractItem.CreateGenericItem(id, sourceLookup[srcId],
                             name, actionContent, isNew, addedDate);
 
                         items.Add(i);
@@ -168,7 +169,7 @@ namespace Watcher.DataStore.SQLite
             return items;
         }
 
-        protected override void RemoveFromDataStore(AbstractSource source)
+        protected override void RemoveFromDataStore(ISource source)
         {
             int id = source.ID.Value;
             string command;
@@ -184,7 +185,7 @@ namespace Watcher.DataStore.SQLite
             
         }
 
-        protected override void DoInsertSource(AbstractSource source)
+        protected override void DoInsertSource(ISource source)
         {
             string command = LoadCommandFT("InsertSource", SourcesTable, source.ProviderID, source.SourceName, SerializeMeta(source.GetMetaData()));
 
@@ -206,7 +207,7 @@ namespace Watcher.DataStore.SQLite
 
         private const char MetaDelim = '|';
         
-        private string SerializeMeta(AbstractSource source)
+        private string SerializeMeta(ISource source)
         {
             Dictionary<string, object> values = new Dictionary<string, object>();
 
@@ -221,7 +222,7 @@ namespace Watcher.DataStore.SQLite
             return meta;
         }
 
-        private string SerializeMeta(Dictionary<string, MetaDataObject> dictionary)
+        private string SerializeMeta(Dictionary<string, IMetaDataObject> dictionary)
         {
             var kvs = from kv in dictionary where kv.Value != null && kv.Value.Value != null select kv;
 
@@ -231,11 +232,11 @@ namespace Watcher.DataStore.SQLite
         }
 
         //TODO: Need to set display name elsewhere and metaData type
-        private Dictionary<string, MetaDataObject> DeserializeMeta(string meta)
+        private Dictionary<string, IMetaDataObject> DeserializeMeta(string meta)
         {
             string[] data = meta.Split(MetaDelim);
 
-            Dictionary<string, MetaDataObject> kvs = new Dictionary<string, MetaDataObject>();
+            Dictionary<string, IMetaDataObject> kvs = new Dictionary<string, IMetaDataObject>();
 
             foreach (string kv in data)
             {
@@ -243,7 +244,7 @@ namespace Watcher.DataStore.SQLite
                 string key = kv.Substring(0, split);
                 string value = kv.Substring(split+1);
 
-                MetaDataObject mdo = new MetaDataObject(key, null, MetaDataObject.Type.NA);
+                MetaDataObject mdo = new MetaDataObject(key, null, MetaDataObjectType.NA);
                 mdo.SetValue(value);
 
                 kvs.Add(key, mdo);
@@ -252,7 +253,7 @@ namespace Watcher.DataStore.SQLite
             return kvs;
         }
 
-        protected override void DoUpdateSource(AbstractSource source)
+        protected override void DoUpdateSource(ISource source)
         {
             string command;
 
@@ -270,7 +271,7 @@ namespace Watcher.DataStore.SQLite
                 source.SetID(GetLastInsertRow());
         }
 
-        protected override bool DoAddItem(AbstractItem item)
+        protected override bool DoAddItem(IDataItem item)
         {
             string command = "select ID from {0} WHERE Name='{1}'";
 
@@ -299,7 +300,7 @@ namespace Watcher.DataStore.SQLite
 
      
 
-        public override void UpdateItem(AbstractItem item)
+        public override void UpdateItem(IDataItem item)
         {
             string command = LoadCommandFT("UpdateItem", ItemsTable, item.New ? 1 : 0, item.ID.Value);
 
@@ -308,7 +309,7 @@ namespace Watcher.DataStore.SQLite
 
         }
 
-        public override List<AbstractItem> Search(string filter)
+        public override List<IDataItem> Search(string filter)
         {
             string sql = "select * from {0} where Name LIKE '%{1}%'";
             sql = String.Format(sql, ItemsTable, filter);

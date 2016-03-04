@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Watcher.Extensions.V2.Adapters
 {
+    [Obsolete]
     public static class V1Converter
     {
         public static AbstractProvider ConvertProvider(Extensions.AbstractProvider provider)

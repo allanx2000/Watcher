@@ -5,6 +5,7 @@ using System.Threading;
 using Watcher.Core.Items;
 using Watcher.Extensions.V2;
 using Watcher.Extensions.Internal;
+using Watcher.Interop;
 
 namespace Watcher.Core
 {
@@ -18,7 +19,7 @@ namespace Watcher.Core
         /// </summary>
         /// <param name="dataStore"></param>
         /// <param name="providers"></param>
-        public static void Initialize(AbstractDataStore dataStore, List<AbstractProvider> providers)
+        public static void Initialize(IDataStore dataStore, List<IProvider> providers)
         {
             _manager = new DataManager(dataStore, providers);
         }
@@ -31,10 +32,10 @@ namespace Watcher.Core
         }
 
         //Instance
-        AbstractDataStore dataStore;
-        List<AbstractProvider> providers;
+        IDataStore dataStore;
+        List<IProvider> providers;
         
-        private DataManager(AbstractDataStore dataStore, List<AbstractProvider> providers)
+        private DataManager(IDataStore dataStore, List<IProvider> providers)
         {
             this.dataStore = dataStore;
             this.providers = providers;
@@ -42,7 +43,7 @@ namespace Watcher.Core
             dataStore.Initialize(providers);
         }
 
-        public AbstractDataStore DataStore
+        public IDataStore DataStore
         {
             get
             {
@@ -51,16 +52,16 @@ namespace Watcher.Core
         }
 
 
-        public List<AbstractProvider> GetProviders()
+        public List<IProvider> GetProviders()
         {
             return providers;
         }
 
         struct UpdateParameters
         {
-            public List<AbstractItem> AddedItems { get; set; }
+            public List<IDataItem> AddedItems { get; set; }
             public int UpdateTimeOut { get; set; }
-            public Action<bool, List<AbstractItem>, object> Callback { get; set; }
+            public Action<bool, List<IDataItem>, object> Callback { get; set; }
             public List<Thread> WorkerThreads { get; set; }
         }
 
@@ -94,7 +95,7 @@ namespace Watcher.Core
         /// <param name="updateTimeoutInMinutes"></param>
         /// <param name="callback"></param>
         /// <param name="multithread"></param>
-        public void UpdateItems(int updateTimeoutInMinutes = 2, Action<bool, List<AbstractItem>, object> callback = null, bool multithread = true)
+        public void UpdateItems(int updateTimeoutInMinutes = 2, Action<bool, List<IDataItem>, object> callback = null, bool multithread = true)
         {
             //multithread = false;
 
@@ -102,7 +103,7 @@ namespace Watcher.Core
 
             AddMessage("Updating...");
 
-            List<AbstractItem> addedItems = new List<AbstractItem>();
+            List<IDataItem> addedItems = new List<IDataItem>();
 
             try
             {
@@ -232,7 +233,7 @@ namespace Watcher.Core
         /// <param name="p"></param>
         /// <param name="s"></param>
         /// <param name="addedItems"></param>
-        private void DoItemsCheck(AbstractProvider p, AbstractSource s, List<AbstractItem> addedItems)
+        private void DoItemsCheck(IProvider p, AbstractSource s, List<IDataItem> addedItems)
         {
             try
             {

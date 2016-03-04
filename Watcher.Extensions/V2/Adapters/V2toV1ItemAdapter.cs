@@ -6,6 +6,7 @@ using V1 = Watcher.Extensions;
 
 namespace Watcher.Extensions.V2.Adapters
 {
+    [Obsolete]
     public class V2toV1ItemAdapter : V1.AbstractItem
     {
         private AbstractItem item;

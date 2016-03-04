@@ -3,23 +3,24 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Watcher.Extensions.Internal;
+using Watcher.Interop;
 
 namespace Watcher.Extensions.V2
 {
     /// <summary>
     /// Object wrapper for the underlying data source
     /// </summary>
-    public abstract class AbstractDataStore
+    public abstract class AbstractDataStore : IDataStore
     {
         private readonly string type;
 
-        private ObservableCollection<AbstractSource> sources = new MTObservableCollection<AbstractSource>();
-        private ObservableCollection<AbstractItem> items = new MTObservableCollection<AbstractItem>();
+        private ObservableCollection<ISource> sources = new MTObservableCollection<ISource>();
+        private ObservableCollection<IDataItem> items = new MTObservableCollection<IDataItem>();
 
         /// <summary>
         /// A list of default items, usually the latest N items
         /// </summary>
-        public ObservableCollection<AbstractItem> Items
+        public ObservableCollection<IDataItem> Items
         {
             get
             {
@@ -34,7 +35,7 @@ namespace Watcher.Extensions.V2
         /// <summary>
         /// A list of all sources in the datastore
         /// </summary>
-        public ObservableCollection<AbstractSource> Sources
+        public ObservableCollection<ISource> Sources
         {
             get
             {
@@ -67,10 +68,10 @@ namespace Watcher.Extensions.V2
         /// Initializes the data store for usage
         /// </summary>
         /// <param name="providers">A list of loaded providers</param>
-        public void Initialize(List<AbstractProvider> providers)
+        public void Initialize(List<IProvider> providers)
         {
 
-            Dictionary<string, AbstractProvider> providerLookup = providers.ToDictionary(p => p.GetProviderId());
+            Dictionary<string, IProvider> providerLookup = providers.ToDictionary(p => p.GetProviderId());
 
             List<GenericSource> sources = LoadSources();
 
@@ -112,7 +113,7 @@ namespace Watcher.Extensions.V2
                 }
             }
 
-            List<AbstractItem> its = LoadItems();
+            List<IDataItem> its = LoadItems();
 
             //Only load the ones that have a Source loaded
             foreach (AbstractItem i in its)
@@ -139,10 +140,10 @@ namespace Watcher.Extensions.V2
         /// Returns the default items from the data store
         /// </summary>
         /// <returns></returns>
-        protected abstract List<AbstractItem> LoadItems();
+        protected abstract List<IDataItem> LoadItems();
 
 
-        public void RemoveSource(AbstractSource source)
+        public void RemoveSource(ISource source)
         {
             bool removed = sources.Remove(source);
 
@@ -152,9 +153,9 @@ namespace Watcher.Extensions.V2
             }
         }
 
-        protected abstract void RemoveFromDataStore(AbstractSource source);
+        protected abstract void RemoveFromDataStore(ISource source);
 
-        public AbstractSource AddSource(AbstractSource source)
+        public ISource AddSource(ISource source)
         {
             if (sources.Contains(source))
                 throw new Exception("Source already exists.");
@@ -186,10 +187,10 @@ namespace Watcher.Extensions.V2
         /// This function should set the ID on the source object
         /// </summary>
         /// <param name="source"></param>
-        protected abstract void DoInsertSource(AbstractSource source);
+        protected abstract void DoInsertSource(ISource source);
 
 
-        public void UpdateSource(AbstractSource source)
+        public void UpdateSource(ISource source)
         {
             DoUpdateSource(source);
 
@@ -204,9 +205,9 @@ namespace Watcher.Extensions.V2
 
         }
 
-        protected abstract void DoUpdateSource(AbstractSource source);
+        protected abstract void DoUpdateSource(ISource source);
 
-        public void UpdateItem(List<AbstractItem> items)
+        public void UpdateItem(List<IDataItem> items)
         {
             foreach (var i in items)
             {
@@ -214,13 +215,13 @@ namespace Watcher.Extensions.V2
             }
         }
 
-        public abstract void UpdateItem(AbstractItem item);
+        public abstract void UpdateItem(IDataItem item);
 
-        public List<AbstractItem> AddItems(List<AbstractItem> items)
+        public List<IDataItem> AddItems(List<IDataItem> items)
         {
-            List<AbstractItem> addedItems = new List<AbstractItem>();
+            List<IDataItem> addedItems = new List<IDataItem>();
 
-            foreach (AbstractItem i in items)
+            foreach (IDataItem i in items)
             {
                 try
                 {
@@ -239,11 +240,11 @@ namespace Watcher.Extensions.V2
             return addedItems;
         }
 
-        protected abstract bool DoAddItem(AbstractItem item);
+        protected abstract bool DoAddItem(IDataItem item);
 
         //public abstract void SaveItems();
 
 
-        public abstract List<AbstractItem> Search(string filter);
+        public abstract List<IDataItem> Search(string filter);
     }
 }

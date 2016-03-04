@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Watcher.Extensions
+namespace Watcher.Extensions.V1
 {
+    [Obsolete]
     public abstract class AbstractProvider
     {
         private readonly string providerId;

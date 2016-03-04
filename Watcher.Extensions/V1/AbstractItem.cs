@@ -1,9 +1,9 @@
 ﻿using System;
 using Watcher.Extensions.Internal;
 
-namespace Watcher.Extensions
+namespace Watcher.Extensions.V1
 {
-  
+    [Obsolete]
     public abstract class AbstractItem
     {
         public class GenericItem : AbstractItem

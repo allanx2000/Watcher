@@ -34,7 +34,6 @@ namespace Watcher.Provider.Jobs
 
         private static readonly List<string> ExcludeKeywords = new List<string>()
         {
-            "java",
             "c++",
             "support",
             "tester",

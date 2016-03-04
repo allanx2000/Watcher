@@ -9,8 +9,8 @@ namespace Watcher.Extensions.V2
 {
     public class GenericSource : AbstractSource
     {
-        public GenericSource(string sourceName, string providerId)
-            : base(sourceName, providerId)
+        public GenericSource(string sourceName, string providerId, bool disabled)
+            : base(sourceName, providerId, disabled)
         {
         }
 

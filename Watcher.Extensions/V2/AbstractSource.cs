@@ -1,18 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Media;
+using Watcher.Interop;
 
 namespace Watcher.Extensions.V2
 {
 
-    public abstract class AbstractSource
+    public abstract class AbstractSource : ISource
     {   
         public int? ID {get; private set;}
         public string ProviderID {get; private set;}
         public string SourceName { get; private set; }
-        
-        private Dictionary<string, MetaDataObject> MetaData = new Dictionary<string, MetaDataObject>();
 
+        public const string DISABLED = "Disabled";
+
+        public bool Disabled
+        {
+            get
+            {
+                var res = GetMetaDataValue(DISABLED) as bool?;
+                return res == null ? false : res.Value;
+            }
+            set
+            {
+                SetMetaDataValue(DISABLED, value.ToString());
+            }
+        }
+
+        private Dictionary<string, IMetaDataObject> MetaData = new Dictionary<string, IMetaDataObject>();
+        private Dictionary<string, string> unparsed;
+
+        //public bool MetadataUnparsed { get { return MetaData == null || MetaData.Count == 0; }}
 
         public virtual string GetDisplayName()
         {
@@ -24,10 +42,13 @@ namespace Watcher.Extensions.V2
         /// </summary>
         /// <param name="sourceName">This is used for serialization, it is a key that identifies the type of source; it can also be a friendly-name</param>
         /// <param name="providerId">The provider's key</param>
-        protected AbstractSource(string sourceName, string providerId)
+        protected AbstractSource(string sourceName, string providerId, bool disabled = false)
         {
             ProviderID = providerId;
             SourceName = sourceName;
+
+            SetMetaData(new MetaDataObject(DISABLED, "Disabled", fieldType: MetaDataObjectType.CheckBox));
+            Disabled = disabled;
             
         }
 
@@ -45,32 +66,35 @@ namespace Watcher.Extensions.V2
             this.SetMetaData(src.GetMetaData());
         }
 
-        
+        //TODO: Add to interface, Rename
+        /// <summary>
+        /// Adds the MetaDataObject to MetaData, used for templating
+        /// </summary>
+        /// <param name="meta"></param>
+        public void SetMetaData(IMetaDataObject meta)
+        {
+                MetaData.Add(meta.ID, meta);
+        }
+
         /// <summary>
         /// Add a custom metadata value to the source definition
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public AbstractSource SetMetaDataValue(string key, string value)
+        public ISource SetMetaDataValue(string key, string value)
         {
-            //TODO: Add to initializer, should inialize the Dictionary with the MetaDataObjects on create
+            //TODO: Add to initializer, should inialize the Dictionary with the IMetaDataObjects on create
             /*if (!ProtectedValues.Contains(key))
             else throw new Exception(key + " is protected and cannot be explicitly set");
             */
             
-            if (!MetaData.ContainsKey(key))
-            {
-                //TODO: some how SourceEditor sould create these
-                MetaData.Add(key, new MetaDataObject(key, key, MetaDataObject.Type.String));
-            }
-
             MetaData[key].SetValue(value);
             
             return this;
         }
 
-        public AbstractSource ClearMetaDataValue(string key)
+        public ISource ClearMetaDataValue(string key)
         {
             if (MetaData.ContainsKey(key))
                 MetaData[key].SetValue(null);
@@ -94,9 +118,9 @@ namespace Watcher.Extensions.V2
         /// Gets the entire metadata dictionary including protected
         /// </summary>
         /// <returns></returns>
-        public Dictionary<string, MetaDataObject> GetMetaData()
+        public Dictionary<string, IMetaDataObject> GetMetaData()
         {
-            var clone = new Dictionary<string, MetaDataObject>(MetaData);
+            var clone = new Dictionary<string, IMetaDataObject>(MetaData);
 
             /*
             foreach (string field in ProtectedValues)
@@ -108,21 +132,21 @@ namespace Watcher.Extensions.V2
         }
         
 
-        public AbstractSource SetID(int id)
+        public ISource SetID(int id)
         {
             ID = id;
 
             return this;
         }
 
-        public AbstractSource SetProviderID(string providerId)
+        public ISource SetProviderID(string providerId)
         {
             ProviderID = providerId;
 
             return this;
         }
 
-        public AbstractSource SetSourceName(string sourceName)
+        public ISource SetSourceName(string sourceName)
         {
             SourceName = sourceName;
 
@@ -143,25 +167,39 @@ namespace Watcher.Extensions.V2
                 + SourceName.GetHashCode()*7;
         }
 
-        private bool IsEqual(AbstractSource that)
+        private bool IsEqual(ISource that)
         {
             return this.ProviderID == that.ProviderID
                 && this.SourceName == that.SourceName;
         }
+
+        public virtual ISource SetMetaData(Dictionary<string, string> metadata)
+        {
+            unparsed = metadata;
+            return this;
+        }
+
 
         /// <summary>
         /// Sets the metadata fields. This should contain all fields from the Provider with any values in the Source itself placed into the Value property 
         /// </summary>
         /// <param name="metadata"></param>
         /// <returns></returns>
-        public virtual AbstractSource SetMetaData(Dictionary<string, MetaDataObject> metadata)
+        public virtual ISource SetMetaData(Dictionary<string, IMetaDataObject> metadata)
         {
-            this.MetaData = metadata;
-
+            if (this.MetaData == null)
+                this.MetaData = metadata;
+            else
+            {
+                foreach (var m in metadata)
+                {
+                    this.MetaData[m.Key] = m.Value;
+                }
+            }
             return this;
         }
 
-        public virtual void CopyTo(AbstractSource outputSource)
+        public virtual void CopyTo(ISource outputSource)
         {
             outputSource.SetMetaData(this.MetaData);
             outputSource.SetProviderID(this.ProviderID);
@@ -169,9 +207,9 @@ namespace Watcher.Extensions.V2
         }
 
 
-        public virtual void SetMetaData(List<MetaDataObject> metaData)
+        public virtual void SetMetaData(List<IMetaDataObject> metaData)
         {
-            Dictionary<string, MetaDataObject> dict = new Dictionary<string, MetaDataObject>();
+            Dictionary<string, IMetaDataObject> dict = new Dictionary<string, IMetaDataObject>();
             
             foreach(var i in metaData)
             {

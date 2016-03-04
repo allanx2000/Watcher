@@ -13,16 +13,32 @@ using System.Collections.Specialized;
 using Watcher.Extensions.V2;
 using Watcher.Extensions.Internal;
 using Innouvous.Utils.DialogWindow.Windows;
+using Watcher.Interop;
 
 namespace Watcher.Client.WPF.ViewModels
 {
     class MainWindowViewModel : ViewModel
     {
+        private bool topmost = false;
+
+        public bool TopMost
+        {
+            get
+            {
+                return topmost;
+            }
+            set
+            {
+                topmost = value;
+                RaisePropertyChanged();
+            }
+        }
+
         private volatile bool isUpdating = false;
         private DateTime? lastUpdated = null;
         private bool showOld = false;
 
-        private Dictionary<AbstractSource, SourceViewModel> SVMLookup = new Dictionary<AbstractSource, SourceViewModel>();
+        private Dictionary<ISource, SourceViewModel> SVMLookup = new Dictionary<ISource, SourceViewModel>();
 
         private CollectionViewSource sortedView;
 
@@ -247,7 +263,7 @@ namespace Watcher.Client.WPF.ViewModels
                     throw new Exception("No search string entered");
 
                 items.Clear();
-                List<AbstractItem> results = DataManager.Instance().DataStore.Search(SearchFilter);
+                List<IDataItem> results = DataManager.Instance().DataStore.Search(SearchFilter);
 
                 foreach (var i in results)
                 {
@@ -405,7 +421,7 @@ namespace Watcher.Client.WPF.ViewModels
 
         private void MarkSelected(object selected)
         {
-            List<AbstractItem> updated = new List<AbstractItem>();
+            List<IDataItem> updated = new List<IDataItem>();
 
             var items = selected as System.Collections.IList;
 
@@ -435,7 +451,7 @@ namespace Watcher.Client.WPF.ViewModels
             if (MessageBox.Show("Mark all items as read?", "Mark All Read", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
                 return;
 
-            List<AbstractItem> updated = new List<AbstractItem>();
+            List<IDataItem> updated = new List<IDataItem>();
             foreach (ItemViewModel ivm in items)
             {
                 if (ivm.Data.New)
@@ -543,7 +559,7 @@ namespace Watcher.Client.WPF.ViewModels
 
 
         //This just adds the new items to the View
-        private void OnFinishedUpdating(bool success, List<AbstractItem> newItems, object data)
+        private void OnFinishedUpdating(bool success, List<IDataItem> newItems, object data)
         {
             LastUpdated = DateTime.Now;
             IsUpdating = false;
@@ -574,7 +590,7 @@ namespace Watcher.Client.WPF.ViewModels
         #endregion
 
 
-        public SourceViewModel GetSVM(AbstractSource source)
+        public SourceViewModel GetSVM(ISource source)
         {
             return SVMLookup[source];
         }
@@ -663,7 +679,7 @@ namespace Watcher.Client.WPF.ViewModels
         }
 
 
-        private void PopulateSVMLookup(IEnumerable<AbstractSource> sources)
+        private void PopulateSVMLookup(IEnumerable<ISource> sources)
         {
             foreach (var s in sources)
             {

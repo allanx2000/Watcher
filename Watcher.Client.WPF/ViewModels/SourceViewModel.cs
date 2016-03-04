@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.Windows.Media;
 using Watcher.Core;
 using Watcher.Extensions.V2;
+using Watcher.Interop;
 
 namespace Watcher.Client.WPF.ViewModels
 {
-    public class SourceViewModel : ViewModel<AbstractSource>
+    public class SourceViewModel : ViewModel<ISource>
     {
 
         public static readonly Color DefaultColor = Colors.Black;
@@ -106,7 +107,7 @@ namespace Watcher.Client.WPF.ViewModels
             }
         }
 
-        public static Color GetColor(AbstractSource source)
+        public static Color GetColor(ISource source)
         {
 
             object value = source.GetMetaDataValue(SourceViewModel.UPDATES_COLOR);
@@ -116,7 +117,7 @@ namespace Watcher.Client.WPF.ViewModels
                 return DeserializeColor(value.ToString());
         }
 
-        public static string GetUrl(AbstractSource source)
+        public static string GetUrl(ISource source)
         {
             object value = source.GetMetaDataValue(SourceViewModel.UPDATES_COLOR);
             if (value == null)
@@ -126,7 +127,7 @@ namespace Watcher.Client.WPF.ViewModels
         }
 
 
-        public SourceViewModel(AbstractSource source) : base(source)
+        public SourceViewModel(ISource source) : base(source)
         {   
         }
 

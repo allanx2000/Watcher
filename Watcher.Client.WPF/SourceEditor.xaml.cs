@@ -9,6 +9,7 @@ using System.Windows.Media;
 using Watcher.Client.WPF.ViewModels;
 using Innouvous.Utils.MVVM;
 using Watcher.Extensions.V2;
+using Watcher.Interop;
 
 namespace Watcher.Client.WPF
 {
@@ -20,8 +21,8 @@ namespace Watcher.Client.WPF
     /// </summary>
     public partial class SourceEditor : Window
     {
-        //private AbstractDataStore datastore;
-        //private List<AbstractProvider> providers;
+        //private IDataStore datastore;
+        //private List<IProvider> providers;
 
         //private Color selectedColor = SourceViewModel.DefaultColor;
 
@@ -39,7 +40,7 @@ namespace Watcher.Client.WPF
 
         }
             
-        public SourceEditor(List<AbstractProvider> providers, AbstractDataStore dataStore, SourceViewModel svm)
+        public SourceEditor(List<IProvider> providers, IDataStore dataStore, SourceViewModel svm)
         {
             InitializeComponent();
 

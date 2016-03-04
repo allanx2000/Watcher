@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Windows.Media;
 
-namespace Watcher.Extensions
+namespace Watcher.Extensions.V1
 {
-
+    [Obsolete]
     public abstract class AbstractSource
     {
         public int? ID {get; private set;}

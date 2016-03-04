@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Watcher.Extensions.V2;
+using Watcher.Interop;
 
 namespace Watcher.Extensions.V2
 {
@@ -10,15 +11,15 @@ namespace Watcher.Extensions.V2
     {
         private MetaDataObject template;
 
-        public MetaDataObjectBuilder(string id, string displayName, MetaDataObject.Type type = MetaDataObject.Type.String, List<string> selectValues = null)
+        public MetaDataObjectBuilder(string id, string displayName, MetaDataObjectType type = MetaDataObjectType.String, List<string> selectValues = null)
         {
-            template = new MetaDataObject(id, displayName, type, selectValues);
+            template = new MetaDataObject(id, displayName, type, selectorValues: selectValues);
         }
 
         public MetaDataObject Create()
         {
             return
-                new MetaDataObject(template.ID, template.DisplayName, template.FieldType, template.SelectorValues);
+                new MetaDataObject(template.ID, template.DisplayName, template.FieldType, selectorValues: template.SelectorValues);
         }
 
         public MetaDataObject Create(object value)

@@ -5,8 +5,9 @@ using System.Linq;
 using Watcher.Extensions;
 using Watcher.Extensions.Internal;
 
-namespace Watcher.Extensions
+namespace Watcher.Extensions.V1
 {
+    [Obsolete]
     public abstract class AbstractDataStore
     {
         private readonly string type;

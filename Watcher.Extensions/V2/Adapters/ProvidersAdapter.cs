@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using V1 = Watcher.Extensions;
+using V1 = Watcher.Extensions.V1;
 
 namespace Watcher.Extensions.V2.Adapters
 {
+    [Obsolete]
     public class ProvidersAdapter : AbstractProvider
     {
         private V1.AbstractProvider provider;

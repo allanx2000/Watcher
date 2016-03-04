@@ -6,40 +6,27 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Watcher.Interop;
 
 namespace Watcher.Core.Loaders
 {
-    public class AbstractDLLLoader<T>
+    public class AbstractDLLLoader
     {
-        enum TypeOfT
-        {
-            Interface,
-            Class
-        }
-        
         private readonly string folder;
         private readonly string extension = ".dll";
-        private readonly TypeOfT type;
-
-        private Type typeInfo;
 
         public AbstractDLLLoader(string folder, string extension = ".dll")
         {
             this.folder = folder;
             this.extension = extension;
-
-            typeInfo = typeof(T);
-
-            if (typeInfo.IsInterface)
-                type = TypeOfT.Interface;
-            else
-                type = TypeOfT.Class;
         }
 
-        protected List<T> LoadFiles()
+        protected List<IProvider> LoadFiles()
         {
 
-            List<T> items = new List<T>();
+            Type intf = typeof(IProvider);
+
+            List<IProvider> items = new List<IProvider>();
 
             var files = from f in Directory.GetFiles(folder, "*" + extension) select new FileInfo(f);
 
@@ -49,20 +36,11 @@ namespace Watcher.Core.Loaders
                 {
                     //Assembly assem = Assembly.LoadFile(f.FullName);
                     Assembly assem = Assembly.LoadFrom(f.FullName);
-                    
+
                     foreach (Type t in assem.GetTypes())
                     {
-                        switch (type)
-                        {
-                            case TypeOfT.Class:
-                                if (t.IsSubclassOf(typeInfo))
-                                    items.Add(CreateInstance(assem, t));
-                                break;
-                            case TypeOfT.Interface:
-                                if (t.GetInterface(typeInfo.FullName, true) != null)
-                                    items.Add(CreateInstance(assem, t));
-                                break;
-                        }
+                        if (t.GetInterface(intf.FullName, true) != null)
+                            items.Add(CreateInstance(assem, t));
                     }
                 }
                 catch (Exception e)
@@ -75,9 +53,9 @@ namespace Watcher.Core.Loaders
             return items;
         }
 
-        private static T CreateInstance(Assembly assem, Type t)
+        private static IProvider CreateInstance(Assembly assem, Type t)
         {
-            return (T)assem.CreateInstance(t.FullName);
+            return (IProvider)assem.CreateInstance(t.FullName);
         }
     }
 }

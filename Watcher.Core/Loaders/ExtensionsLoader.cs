@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
 using Watcher.Extensions;
-using Watcher.Extensions.V2.Adapters;
+using Watcher.Interop;
 
 namespace Watcher.Core.Loaders
 {
@@ -16,19 +16,16 @@ namespace Watcher.Core.Loaders
 
         private DirectoryInfo extensionsDirectory;
 
-        private List<AbstractDataStore> dataStores = new List<AbstractDataStore>();
-        private List<Watcher.Extensions.V2.AbstractProvider> providers = new List<Watcher.Extensions.V2.AbstractProvider>();
+        private List<IDataStore> dataStores = new List<IDataStore>();
+        private List<IProvider> providers = new List<IProvider>();
 
         public ExtensionsLoader(string extensionsPath)
         {
             try
             {
-                Type providerType = typeof(AbstractProvider);
-
+                Type providerType = typeof(IProvider);
                 Type newProviderType = typeof(Watcher.Extensions.V2.AbstractProvider);
                 
-
-
                 if (Directory.Exists(extensionsPath))
                 {
                     extensionsDirectory = new DirectoryInfo(extensionsPath);
@@ -39,15 +36,20 @@ namespace Watcher.Core.Loaders
                     {
                         try
                         {
-
                             Assembly assem = Assembly.LoadFile(f.FullName);
 
                             foreach (Type t in assem.GetTypes())
                             {
+                                //TODO: Check this....
+                                if (t.IsSubclassOf(providerType))
+                                    providers.Add((IProvider) CreateInstance(assem, t));
+                                /*
                                 if (t.IsSubclassOf(newProviderType))
                                     providers.Add((Watcher.Extensions.V2.AbstractProvider)CreateInstance(assem, t));
                                 else if (t.IsSubclassOf(providerType))
                                     V1Converter.ConvertProvider((AbstractProvider)CreateInstance(assem, t));
+
+                                */
                             }
                         }
                         catch (Exception ex)
@@ -68,12 +70,12 @@ namespace Watcher.Core.Loaders
             return assem.CreateInstance(t.FullName);
         }
 
-        public List<Watcher.Extensions.V2.AbstractProvider> GetProviders()
+        public List<IProvider> GetProviders()
         {
             return providers;
         }
 
-        public List<AbstractDataStore> GetDataStores()
+        public List<IDataStore> GetDataStores()
         {
             return dataStores;
         }

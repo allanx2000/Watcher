@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Watcher.Extensions;
+using Watcher.Extensions.V2;
+using Watcher.Interop;
 
 namespace Watcher.Provider.HundredZero
 {
@@ -19,46 +21,93 @@ namespace Watcher.Provider.HundredZero
         private const string META_MAX_PAGES = "MaxPages";
         private const string META_URL = "CategoryUrl";
 
-        public HundredZeroProvider() : base(PROVIDER)
+        public HundredZeroProvider() : base(PROVIDER, false, true)
         {
         }
 
+        public override List<IMetaDataObject> GetMetaFields()
+        {
+            List<IMetaDataObject> meta = new List<IMetaDataObject>()
+            {
+                new MetaDataObject(META_URL, "Category URL"),
+                new MetaDataObject(META_MAX_PAGES, "Max Pages")
+            };
+
+            return meta;
+        }
+
+        /*
         public override List<string> GetMetaFields()
         {
             return new List<string>() {
                 META_URL,
                 META_MAX_PAGES
             };
-        }
+        }*/
 
+        /*
         public override SourceOptions GetSourceOptions()
         {
             return SourceOptions.CreateFromParameters(true, false);
         }
+        */
 
-        protected override AbstractSource DoCreateNewSource(string name, string url, Dictionary<string, string> metaData)
-        {
             
-                if (!metaData.ContainsKey(META_URL) || !metaData[META_URL].StartsWith(BASE_URL))
-                throw new Exception("Invalid URL");
+        protected override ISource DoCreateNewSource(string name, string url, List<IMetaDataObject> metaData)
+        {
+            bool valid = true;
+
+            foreach (var md in metaData)
+            {
+                switch (md.ID)
+                {
+                    case META_URL:
+                        if (!(md.Value is string && ((string)md.Value).StartsWith(BASE_URL)))
+                            valid = false;
+                        break;
+                }
+
+                if (!valid)
+                    throw new Exception("Invalid URL");
+            }
 
             AbstractSource s = new HundredZeroSource(name);
 
-            s.AddMetaData(META_URL, metaData[META_URL]);
-            s.AddMetaData(META_MAX_PAGES, metaData[META_MAX_PAGES]);
+            s.SetMetaData(metaData);
+
+            //TODO: Not needed?
+
+            /*
+            foreach (var kv in s.GetMetaData())
+            {
+                string displayName = null;
+                switch(kv.Value.ID)
+                {
+                    case META_URL:
+                        displayName = "Category URL";
+                        break;
+                    case META_MAX_PAGES:
+                        displayName = "Max Pages";
+                        break;
+                }
+
+                if (displayName != null)
+                    kv.Value.SetDisplayName(displayName);
+            }
+            */
 
             return s;
         }
 
-        protected override List<AbstractItem> GetNewItems(AbstractSource source)
+        protected override List<IDataItem> GetNewItems(ISource source)
         {
             if (source.ProviderID == PROVIDER)
             {
-                
-                int maxPages = Convert.ToInt32(source.GetMetaDataValue(META_MAX_PAGES));
-                string url = source.GetMetaDataValue(META_URL);
 
-                List<AbstractItem> books = new List<AbstractItem>();
+                int maxPages = Convert.ToInt32(source.GetMetaDataValue(META_MAX_PAGES));
+                string url = source.GetMetaDataValue(META_URL).ToString();
+
+                List<IDataItem> books = new List<IDataItem>();
 
                 try
                 {
@@ -76,10 +125,10 @@ namespace Watcher.Provider.HundredZero
             }
             else return null;
         }
-                
-        private List<Book> GetBooksOnPage(AbstractSource source, string baseUrl, int page)
+
+        private List<IDataItem> GetBooksOnPage(ISource source, string baseUrl, int page)
         {
-            List<Book> books = new List<Book>();
+            List<IDataItem> books = new List<IDataItem>();
 
             string url = baseUrl + "/page/" + page;
 
@@ -105,7 +154,7 @@ namespace Watcher.Provider.HundredZero
             return books;
         }
 
-        public override void DoAction(AbstractItem item)
+        public override void DoAction(IDataItem item)
         {
             Process.Start(item.ActionContent);
         }

@@ -9,12 +9,13 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using Watcher.Extensions.V2;
+using Watcher.Interop;
 
 namespace Watcher.Client.WPF.ViewModels
 {
     public class SourceEditorViewModel : ViewModel
     {
-        private AbstractDataStore datastore;
+        private IDataStore datastore;
         private SourceViewModel originalSource;
 
 
@@ -22,8 +23,8 @@ namespace Watcher.Client.WPF.ViewModels
         private Grid optionsGrid;
 
         #region Properties
-        private List<AbstractProvider> providers;
-        public List<AbstractProvider> Providers
+        private List<IProvider> providers;
+        public List<IProvider> Providers
         {
             get
             {
@@ -100,8 +101,8 @@ namespace Watcher.Client.WPF.ViewModels
             }
         }
 
-        private AbstractProvider selectedProvider;
-        public AbstractProvider SelectedProvider
+        private IProvider selectedProvider;
+        public IProvider SelectedProvider
         {
             get
             {
@@ -117,8 +118,8 @@ namespace Watcher.Client.WPF.ViewModels
                     //URLPanel.Visibility = provider.HasUrlField ? Visibility.Visible : Visibility.Collapsed;
 
                     //This is to support restoring values from existing, need to rewrite and separate, make clearer?
-                    List<MetaDataObject> meta = originalSource != null ?
-                        new List<MetaDataObject>(originalSource.Data.GetMetaData().Values) :
+                    List<IMetaDataObject> meta = originalSource != null ?
+                        new List<IMetaDataObject>(originalSource.Data.GetMetaData().Values) :
                         value.GetMetaFields();
 
                     //TODO: Should create everything here, Grid should just be empty
@@ -127,11 +128,11 @@ namespace Watcher.Client.WPF.ViewModels
 
                     int rowCounter = 0;
 
-                    Dictionary<string, string> values = null;
+                    Dictionary<string, IMetaDataObject> values = null;
 
                     if (originalSource != null)
                     {
-                        values = MetaDataObject.ToDictionary(originalSource.Data.GetMetaData());
+                        values = originalSource.Data.GetMetaData();
                     }
 
                     foreach (var m in meta)
@@ -158,21 +159,28 @@ namespace Watcher.Client.WPF.ViewModels
 
                         switch (m.FieldType)
                         {
-                            case MetaDataObject.Type.NA:
+                            case MetaDataObjectType.NA:
                                 break;
-                            case MetaDataObject.Type.Selector:
+                            case MetaDataObjectType.Selector:
                                 var cb = new ComboBox();
                                 cb.ItemsSource = m.SelectorValues;
                                 cb.Text = val;
 
                                 control = cb;
                                 break;
-                            case MetaDataObject.Type.String:
+                            case MetaDataObjectType.String:
                                 TextBox tb = new TextBox();
                                 tb.Text = val;
 
                                 control = tb;
                                 break;
+                            case MetaDataObjectType.CheckBox:
+                                CheckBox check = new CheckBox();
+                                check.IsChecked = Convert.ToBoolean(val);
+                                control = check;
+                                break;
+                            default:
+                                throw new NotSupportedException(m.FieldType.ToString());
                         }
 
                         if (control != null)
@@ -238,7 +246,7 @@ namespace Watcher.Client.WPF.ViewModels
         #endregion
 
 
-        public SourceEditorViewModel(Window window, Grid optionsGrid, List<AbstractProvider> providers, AbstractDataStore dataStore, SourceViewModel svm = null)
+        public SourceEditorViewModel(Window window, Grid optionsGrid, List<IProvider> providers, IDataStore dataStore, SourceViewModel svm = null)
         {
             this.window = window;
             this.optionsGrid = optionsGrid;
@@ -318,12 +326,17 @@ namespace Watcher.Client.WPF.ViewModels
                             value = ((TextBox)c).Text;
                         else if (c is ComboBox)
                             value = ((ComboBox)c).Text;
+                        else if (c is CheckBox)
+                            value = ((CheckBox)c).IsChecked.ToString();
                         else
                         {
                             //Error
                         }
 
-                        var item = MetaDataObject.FindIn(meta, id);
+                        
+                        var item = meta.FirstOrDefault(x => x.ID == id);
+
+                        if (item != null) //TODO: Disabled hack
                         item.SetValue(value);
                     }
                 }

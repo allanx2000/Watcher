@@ -8,14 +8,15 @@ using System.Windows.Media;
 using Watcher.Core;
 using Watcher.Core.Items;
 using Watcher.Extensions.V2;
+using Watcher.Interop;
 
 namespace Watcher.Client.WPF.ViewModels
 {
-    public class ItemViewModel : ViewModel<AbstractItem>
+    public class ItemViewModel : ViewModel<IDataItem>
     {
         private readonly SourceViewModel svm;
         
-        public ItemViewModel(AbstractItem item, SourceViewModel sourceViewModel)
+        public ItemViewModel(IDataItem item, SourceViewModel sourceViewModel)
             : base(item)
         {
             svm = sourceViewModel;

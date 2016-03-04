@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using Watcher.Extensions.V2;
+using Watcher.Interop;
 
 namespace Watcher.Client.WPF.ViewModels
 {
@@ -29,7 +30,7 @@ namespace Watcher.Client.WPF.ViewModels
         {
             get
             {
-                return data.FieldType == MetaDataObject.Type.String ? Visibility.Visible : Visibility.Collapsed;
+                return data.FieldType == MetaDataObjectType.String ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 
@@ -37,7 +38,7 @@ namespace Watcher.Client.WPF.ViewModels
         {
             get
             {
-                return data.FieldType == MetaDataObject.Type.Selector ? Visibility.Visible : Visibility.Collapsed;
+                return data.FieldType == MetaDataObjectType.Selector ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 
