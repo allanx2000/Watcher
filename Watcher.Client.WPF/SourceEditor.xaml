@@ -59,6 +59,8 @@
                 <Border BorderThickness="2" BorderBrush="Black">
                     <Rectangle Width="60" MouseDown="Rectangle_MouseDown" Fill="{Binding PreviewColor}" StrokeThickness="5" />
                 </Border>
+                <CheckBox IsChecked="{Binding Disabled}" Margin="30 0" VerticalAlignment="Center">Disabled</CheckBox>
+
             </StackPanel>
         </StackPanel>
 

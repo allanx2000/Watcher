@@ -544,7 +544,15 @@ namespace Watcher.Client.WPF.ViewModels
 
             IsUpdating = true;
 
-            DataManager.Instance().UpdateItems(AppConfigs.UpdateTimeout, OnFinishedUpdating);
+            //Get Excluded
+            List<int> ids = new List<int>();
+            foreach (var src in Sources)
+            {
+                if (src.Disabled)
+                    ids.Add(src.Data.ID.Value);
+            }
+
+            DataManager.Instance().UpdateItems(AppConfigs.UpdateTimeout, OnFinishedUpdating, true, ids);
         }
 
         public void AbortUpdate()

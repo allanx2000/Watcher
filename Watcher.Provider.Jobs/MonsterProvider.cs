@@ -10,19 +10,21 @@ using System.Diagnostics;
 using Watcher.Extensions.V2;
 using System.Collections.Concurrent;
 using System.Threading;
+using Watcher.Interop;
 
 namespace Watcher.Provider.Jobs
 {
+    
     public static class MonsterProvider
     {
         private const int DefaultPages = 5;
 
-        public static AbstractSource DoCreateNewSource(string name, List<MetaDataObject> metaData) //URL is in meta
+        public static AbstractSource DoCreateNewSource(string name, List<IMetaDataObject> metaData) //URL is in meta
         {
             int tmp;
 
             //Set defaults
-            MetaDataObject mdo = MetaDataObject.FindIn(metaData, JobsProvider.META_PAGES);
+            IMetaDataObject mdo = MetaDataObject.FindIn(metaData, JobsProvider.META_PAGES);
 
             bool hasUrl = false;
             bool hasPages = false;
@@ -71,7 +73,7 @@ namespace Watcher.Provider.Jobs
 
 
 
-        public static List<AbstractItem> GetNewItems(AbstractSource source)
+        public static List<IDataItem> GetNewItems(AbstractSource source)
         {
             if (source.GetMetaDataValue(JobsProvider.META_SOURCE).ToString() == Jobs.JobsProvider.SourceNames.Monster.ToString())
             {
@@ -86,7 +88,7 @@ namespace Watcher.Provider.Jobs
                     Pages = int.Parse(DefaultPages.ToString());
                 }
 
-                ConcurrentBag<AbstractItem> items = new ConcurrentBag<AbstractItem>();
+                ConcurrentBag<IDataItem> items = new ConcurrentBag<IDataItem>();
                 
                 int pageCounter = 0;
                 object counterLock = new object();

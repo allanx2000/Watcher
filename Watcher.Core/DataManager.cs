@@ -31,9 +31,9 @@ namespace Watcher.Core
             else return _manager;
         }
 
-        //Instance
-        IDataStore dataStore;
-        List<IProvider> providers;
+        //Instance Members
+        private IDataStore dataStore;
+        private List<IProvider> providers;
         
         private DataManager(IDataStore dataStore, List<IProvider> providers)
         {
@@ -57,6 +57,9 @@ namespace Watcher.Core
             return providers;
         }
 
+        /// <summary>
+        /// This is used to pass around data used during updating
+        /// </summary>
         struct UpdateParameters
         {
             public List<IDataItem> AddedItems { get; set; }
@@ -93,9 +96,12 @@ namespace Watcher.Core
         /// Gets updates from the loaded Sources using their Providers
         /// </summary>
         /// <param name="updateTimeoutInMinutes"></param>
-        /// <param name="callback"></param>
+        /// <param name="callback">Method to update status and which a list of items</param>
         /// <param name="multithread"></param>
-        public void UpdateItems(int updateTimeoutInMinutes = 2, Action<bool, List<IDataItem>, object> callback = null, bool multithread = true)
+        public void UpdateItems(int updateTimeoutInMinutes = 2, 
+            Action<bool, List<IDataItem>, object> callback = null, 
+            bool multithread = true, 
+            List<int> excludedIds = null)
         {
             //multithread = false;
 
@@ -112,6 +118,12 @@ namespace Watcher.Core
                 //Looks for a the provider that can handle it and calls it
                 foreach (AbstractSource s in DataStore.Sources)
                 {
+                    if (excludedIds.Contains(s.ID.Value))
+                    {
+                        AddMessage(s.GetDisplayName() + ": Skipped");
+                        continue;
+                    }
+
                     foreach (var p in providers)
                     {
                         if (!p.CanCheck(s)) continue;

@@ -9,6 +9,7 @@ using System.Diagnostics;
 using Watcher.Extensions.V2;
 using System.Collections.Concurrent;
 using System.Threading;
+using Watcher.Interop;
 
 namespace Watcher.Provider.Jobs
 {
@@ -31,7 +32,7 @@ namespace Watcher.Provider.Jobs
             };
         }
 
-        public static AbstractSource DoCreateNewSource(string name, List<MetaDataObject> metaData)
+        public static AbstractSource DoCreateNewSource(string name, string url, List<IMetaDataObject> metaData)
         {
 
             Dictionary<string, bool> hasFields = new Dictionary<string, bool>();
@@ -117,7 +118,7 @@ namespace Watcher.Provider.Jobs
             }
         }
 
-        public static List<AbstractItem> GetNewItems(AbstractSource source)
+        public static List<IDataItem> GetNewItems(ISource source)
         {
             if (source.GetMetaDataValue(JobsProvider.META_SOURCE).ToString() == Jobs.JobsProvider.SourceNames.Dice.ToString())
             {
@@ -129,7 +130,7 @@ namespace Watcher.Provider.Jobs
 
                 string QUERY_BASE = CreateBaseUrl(query, location, rangeString);
 
-                ConcurrentBag<AbstractItem> items = new ConcurrentBag<AbstractItem>();
+                ConcurrentBag<IDataItem> items = new ConcurrentBag<IDataItem>();
 
                 int pageCounter = 0;
                 object counterLock = new object();
@@ -177,7 +178,7 @@ namespace Watcher.Provider.Jobs
         }
 
 
-        private static List<JobItem> GetItemsOnPage(string url, AbstractSource source)
+        private static List<JobItem> GetItemsOnPage(string url, ISource source)
         {
             List<JobItem> items = new List<JobItem>();
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Watcher.Extensions.V2;
+using Watcher.Interop;
 
 namespace Watcher.Provider.Jobs
 {
@@ -18,7 +19,7 @@ namespace Watcher.Provider.Jobs
         /// <param name="name"></param>
         /// <param name="metaData"></param>
         /// <returns></returns>
-        public static AbstractSource CreateSource(string name, List<MetaDataObject> metaData)
+        public static ISource CreateSource(string name, List<IMetaDataObject> metaData)
         {
             var type = metaData.FirstOrDefault(x => x.ID == JobsProvider.META_SOURCE);
 
@@ -30,9 +31,11 @@ namespace Watcher.Provider.Jobs
             switch (typeString)
             {
                 case JobsProvider.SourceNames.Dice:
-                    return DiceProvider.DoCreateNewSource(name, metaData);
+                    return DiceProvider.DoCreateNewSource(name, null, metaData);
+                /*
                 case JobsProvider.SourceNames.Monster:
-                    return MonsterProvider.DoCreateNewSource(name, metaData);
+                    return MonsterProvider.DoCreateNewSource(name, null, metaData);
+                */            
                 default:
                     throw new NotSupportedException(typeString);
             }

@@ -4,6 +4,7 @@ using Watcher.Interop;
 
 namespace Watcher.Core.Loaders
 {
+    //Not very useful as Extensions only has 1 version now
 
     public class SuperProvidersLoader : IProviderLoader
     {

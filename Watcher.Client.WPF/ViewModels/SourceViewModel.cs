@@ -15,12 +15,33 @@ namespace Watcher.Client.WPF.ViewModels
 
         public const string UPDATES_COLOR = "UpdatesColor";
         public const string URL = "Url";
+        public const string DISABLED = "Disabled";
 
-        private static readonly List<string> ProtectedValues = new List<string>()
+        public static readonly List<string> ClientTypes = new List<string>()
         {
             UPDATES_COLOR,
-            URL
+            URL,
+            DISABLED
         };
+
+        private bool disabled;
+        public bool Disabled
+        {
+            get
+            {
+                var val = Data.GetMetaDataValue(DISABLED);
+
+                if (val == null || Convert.ToBoolean(val) == false)
+                    return false;
+                else return true;
+            }
+            set
+            {
+                disabled = value; //TODO: What for?
+                RaisePropertyChanged();
+            }
+        }
+
 
         public static string SerializeColor(Color color)
         {
@@ -73,8 +94,7 @@ namespace Watcher.Client.WPF.ViewModels
         {
             Data.SetMetaDataValue(UPDATES_COLOR, SerializeColor(color));            
         }
-
-
+        
         public static Color DeserializeColor(string p)
         {
             var parts = p.Split(' ');

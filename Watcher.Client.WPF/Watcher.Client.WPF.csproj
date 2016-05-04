@@ -28,7 +28,7 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ProductName>Watcher</ProductName>
     <PublisherName>innouvous Technologies</PublisherName>
-    <ApplicationRevision>23</ApplicationRevision>
+    <ApplicationRevision>25</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -187,6 +187,10 @@
     <ProjectReference Include="..\..\Innouvous.Utils\Innouvous.Utils.ResourceDictionaries\Innouvous.Utils.ResourceDictionaries.csproj">
       <Project>{8f93514e-288c-4852-acc6-e6dfd2bc9407}</Project>
       <Name>Innouvous.Utils.ResourceDictionaries</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Innouvous.Utils\Innouvous.Utils.SingleInstance\Innouvous.Utils.SingleInstance.csproj">
+      <Project>{2a6b9c5e-d317-4fa5-8571-fc8c25e1d379}</Project>
+      <Name>Innouvous.Utils.SingleInstance</Name>
     </ProjectReference>
     <ProjectReference Include="..\Watcher.Core\Watcher.Core.csproj">
       <Project>{fd7e4abc-e1ce-498a-9d76-f0707d65a0c5}</Project>

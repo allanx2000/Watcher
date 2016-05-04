@@ -12,7 +12,7 @@ namespace Watcher.Client.WPF.ViewModels
     {
         private string providersPath;
         private string dataStorePath;
-        private string dataStoreKey = SQLiteDataStore.DATA_STORE_TYPE;
+        private string dataStoreKey = "SQLiteDataStore";
         private int updateFrequency;
         private int updateTimeout;
 

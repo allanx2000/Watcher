@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Watcher.Extensions.V2;
+using Watcher.Interop;
 
 namespace Watcher.Provider.Jobs
 {
     class JobsSource : AbstractSource
     {
         
-        public JobsSource(String name) : base(name, JobsProvider.PROVIDER)
+        public JobsSource(string name) : base(name, JobsProvider.PROVIDER)
         {
 
         }
@@ -52,11 +53,11 @@ namespace Watcher.Provider.Jobs
 
         public override string GetDisplayName()
         {
-            return String.Format("{0} > {1}: {2}", ProviderID, Source, SourceName);
+            return string.Format("{0} > {1}: {2}", ProviderID, Source, SourceName);
         }
 
         
-        internal static JobsSource CreateFrom(AbstractSource source)
+        internal static JobsSource CreateFrom(ISource source)
         {
             if (source is JobsSource)
                 return (JobsSource) source;

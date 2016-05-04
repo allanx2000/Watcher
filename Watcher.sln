@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watcher.Core", "Watcher.Core\Watcher.Core.csproj", "{FD7E4ABC-E1CE-498A-9D76-F0707D65A0C5}"
 EndProject
@@ -38,6 +38,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watcher.Provider.Monster", "Watcher.Provider.Monster\Watcher.Provider.Monster.csproj", "{88A6C652-1584-439F-BF40-70CF7296BC8E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watcher.Provider.Jobs", "Watcher.Provider.Jobs\Watcher.Provider.Jobs.csproj", "{77FD051A-0538-4E8F-8C70-9284FC28A625}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innouvous.Utils.SingleInstance", "..\Innouvous.Utils\Innouvous.Utils.SingleInstance\Innouvous.Utils.SingleInstance.csproj", "{2A6B9C5E-D317-4FA5-8571-FC8C25E1D379}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -113,6 +115,10 @@ Global
 		{77FD051A-0538-4E8F-8C70-9284FC28A625}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{77FD051A-0538-4E8F-8C70-9284FC28A625}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{77FD051A-0538-4E8F-8C70-9284FC28A625}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A6B9C5E-D317-4FA5-8571-FC8C25E1D379}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A6B9C5E-D317-4FA5-8571-FC8C25E1D379}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A6B9C5E-D317-4FA5-8571-FC8C25E1D379}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A6B9C5E-D317-4FA5-8571-FC8C25E1D379}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

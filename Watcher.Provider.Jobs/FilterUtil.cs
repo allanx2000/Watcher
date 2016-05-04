@@ -6,13 +6,14 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Watcher.Extensions.V2;
+using Watcher.Interop;
 
 namespace Watcher.Provider.Jobs
 {
     public class FilterUtil
     {
 
-        internal static void FilterAndAdd(List<JobItem> pageItems, ConcurrentBag<AbstractItem> items, int pageCounter, object luk)
+        internal static void FilterAndAdd(List<JobItem> pageItems, ConcurrentBag<IDataItem> items, int pageCounter, object luk)
         {
             Thread th = new Thread(() =>
             {
@@ -71,7 +72,7 @@ namespace Watcher.Provider.Jobs
         };
 
 
-        internal static void DoFilterAndAdd(List<JobItem> pageItems, ConcurrentBag<AbstractItem> items)
+        internal static void DoFilterAndAdd(List<JobItem> pageItems, ConcurrentBag<IDataItem> items)
         {
             foreach (var i in pageItems)
             {

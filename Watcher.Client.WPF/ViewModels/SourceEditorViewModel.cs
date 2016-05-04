@@ -55,8 +55,7 @@ namespace Watcher.Client.WPF.ViewModels
                 RaisePropertyChanged("Name");
             }
         }
-
-        //TODO: Add to XAML
+        
         private string url;
         public string Url
         {
@@ -68,6 +67,20 @@ namespace Watcher.Client.WPF.ViewModels
             {
                 url = value;
                 RaisePropertyChanged("Url");
+            }
+        }
+
+        private bool disabled;
+        public bool Disabled
+        {
+            get
+            {
+                return disabled;
+            }
+            set
+            {
+                disabled = value;
+                RaisePropertyChanged();
             }
         }
 
@@ -112,17 +125,12 @@ namespace Watcher.Client.WPF.ViewModels
             {
                 try
                 {
-
-                    //NamePanel.Visibility = provider.HasUniqueName ? Visibility.Visible : Visibility.Collapsed;
-
-                    //URLPanel.Visibility = provider.HasUrlField ? Visibility.Visible : Visibility.Collapsed;
-
+                    
                     //This is to support restoring values from existing, need to rewrite and separate, make clearer?
                     List<IMetaDataObject> meta = originalSource != null ?
                         new List<IMetaDataObject>(originalSource.Data.GetMetaData().Values) :
                         value.GetMetaFields();
 
-                    //TODO: Should create everything here, Grid should just be empty
                     optionsGrid.Children.Clear();
                     optionsGrid.RowDefinitions.Clear();
 
@@ -137,8 +145,8 @@ namespace Watcher.Client.WPF.ViewModels
 
                     foreach (var m in meta)
                     {
-                        //TODO: Temp hack to remove these custom fields, but need to find better, holistic way; redesign framework?
-                        if (m.ID == SourceViewModel.UPDATES_COLOR || m.ID == SourceViewModel.URL)
+                        //Remove fields belonging to UI
+                        if (SourceViewModel.ClientTypes.Contains(m.ID))
                             continue;
 
                         RowDefinition rd = new RowDefinition() { Height = GridLength.Auto };
@@ -194,8 +202,7 @@ namespace Watcher.Client.WPF.ViewModels
 
                         rowCounter++;
                     }
-
-
+                    
                     selectedProvider = value;
                     RaisePropertyChanged("SelectedProvider");
                     RaisePropertyChanged("NameVisilibility");
@@ -253,10 +260,6 @@ namespace Watcher.Client.WPF.ViewModels
 
             this.Providers = providers;
             this.datastore = dataStore;
-
-            //TODO: Add to XAML
-            //TypeComboBox.ItemsSource = providers;
-            //TypeComboBox.DisplayMemberPath = "ProviderId";
             
             if (svm != null)
                 SetOriginalSource(svm);
@@ -272,6 +275,7 @@ namespace Watcher.Client.WPF.ViewModels
             IDText = source.ID.Value.ToString();
             Name = source.SourceName;
             Url = SourceViewModel.GetUrl(source);
+            Disabled = svm.Disabled;
 
             CanSelectProvider = false;
             SelectedProvider = providers.First(p => p.ProviderId == source.ProviderID);
@@ -344,14 +348,15 @@ namespace Watcher.Client.WPF.ViewModels
                 var newSource = selectedProvider.CreateNewSource(
                     selectedProvider.HasUniqueName ? Name : null //Probably just use name
                     , null, meta);
-                
 
-                //TODO: Should use SVM instead of Abstract?
                 if (selectedProvider.HasUrlField)
-                    newSource.SetMetaDataValue(SourceViewModel.URL, url);
+                {
+                    newSource.SetMetaData(new MetaDataObject(SourceViewModel.URL, SourceViewModel.URL, url));
+                }
 
-                newSource.SetMetaDataValue(SourceViewModel.UPDATES_COLOR, SourceViewModel.SerializeColor(selectedColor));
-
+                newSource.SetMetaData(new MetaDataObject(SourceViewModel.UPDATES_COLOR, SourceViewModel.UPDATES_COLOR, SourceViewModel.SerializeColor(selectedColor)));
+                newSource.SetMetaData(new MetaDataObject(SourceViewModel.DISABLED, SourceViewModel.DISABLED, disabled));
+                
                 if (originalSource != null)
                 {
                     newSource.SetID(originalSource.Data.ID.Value);

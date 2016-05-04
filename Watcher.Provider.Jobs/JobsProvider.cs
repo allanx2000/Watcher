@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Watcher.Extensions.V2;
+using Watcher.Interop;
 
 namespace Watcher.Provider.Jobs
 {
@@ -41,10 +42,10 @@ namespace Watcher.Provider.Jobs
         public static readonly List<string> Sources = new List<string>()
         {
             SourceNames.Dice,
-            SourceNames.Monster,
+            //SourceNames.Monster,
         };
 
-        public static readonly MetaDataObjectBuilder MetaSource = new MetaDataObjectBuilder(META_SOURCE, "Source", MetaDataObject.Type.Selector, Sources);
+        public static readonly MetaDataObjectBuilder MetaSource = new MetaDataObjectBuilder(META_SOURCE, "Source", MetaDataObjectType.Selector, Sources);
         public static readonly MetaDataObjectBuilder MetaUrl = new MetaDataObjectBuilder(META_URL, "URL (Monster)");
         public static readonly MetaDataObjectBuilder MetaQuery = new MetaDataObjectBuilder(META_QUERY, "Query (non-Monster)");
         public static readonly MetaDataObjectBuilder MetaLocation = new MetaDataObjectBuilder(META_LOCATION, "Location (non-Monster)");
@@ -52,9 +53,9 @@ namespace Watcher.Provider.Jobs
         public static readonly MetaDataObjectBuilder MetaPages = new MetaDataObjectBuilder(META_PAGES, "Pages");
         public static readonly MetaDataObjectBuilder MetaPageSize = new MetaDataObjectBuilder(META_PAGE_SIZE, "Page size  (non-Monster)");
         
-        public override List<MetaDataObject> GetMetaFields()
+        public override List<IMetaDataObject> GetMetaFields()
         {
-            List<MetaDataObject> TEMPLATE = new List<MetaDataObject>()
+            List<IMetaDataObject> TEMPLATE = new List<IMetaDataObject>()
             {
                 MetaSource.Create(),
                 MetaUrl.Create(),
@@ -67,19 +68,18 @@ namespace Watcher.Provider.Jobs
 
             return TEMPLATE;
         }
-
-        protected override AbstractSource DoCreateNewSource(string name, string url, List<MetaDataObject> metaData)
+        protected override ISource DoCreateNewSource(string name, string url, List<IMetaDataObject> metaData)
         {
             return SourceFactory.CreateSource(name, metaData);
         }
-
-        public override AbstractSource CastSource(GenericSource src)
+        
+        public override ISource CastSource(ISource src)
         {
             return JobsSource.CreateFrom(src);
         }
 
 
-        protected override List<AbstractItem> GetNewItems(AbstractSource source)
+        protected override List<IDataItem> GetNewItems(ISource source)
         {
             JobsSource js = JobsSource.CreateFrom(source);
 
@@ -87,14 +87,14 @@ namespace Watcher.Provider.Jobs
             {
                 case SourceNames.Dice:
                     return DiceProvider.GetNewItems(source);
-                case SourceNames.Monster:
-                    return MonsterProvider.GetNewItems(source);
+                //case SourceNames.Monster:
+                //    return MonsterProvider.GetNewItems(source);
                 default:
                     throw new Exception("Unrecognized source: " + js.Source);
             }
         }
 
-        public override void DoAction(AbstractItem item)
+        public override void DoAction(IDataItem item)
         {
             Process.Start(item.ActionContent);
         }

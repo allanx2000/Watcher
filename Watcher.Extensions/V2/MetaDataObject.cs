@@ -56,7 +56,7 @@ namespace Watcher.Extensions.V2
         }
 
 
-        public static MetaDataObject FindIn(List<MetaDataObject> metaData, string id)
+        public static IMetaDataObject FindIn(List<IMetaDataObject> metaData, string id)
         {
             var mdo = metaData.FirstOrDefault(x => x.ID == id);
             if (mdo == null)
@@ -65,7 +65,7 @@ namespace Watcher.Extensions.V2
             return mdo;
         }
 
-        public static MetaDataObject FindIn(Dictionary<string, MetaDataObject> metaData, string id)
+        public static IMetaDataObject FindIn(Dictionary<string, IMetaDataObject> metaData, string id)
         {
             if (!metaData.ContainsKey(id))
                 throw new Exception(id + "is not found in metadata");

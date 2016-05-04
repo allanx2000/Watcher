@@ -11,27 +11,9 @@ namespace Watcher.Extensions.V2
         public int? ID {get; private set;}
         public string ProviderID {get; private set;}
         public string SourceName { get; private set; }
-
-        public const string DISABLED = "Disabled";
-
-        public bool Disabled
-        {
-            get
-            {
-                var res = GetMetaDataValue(DISABLED) as bool?;
-                return res == null ? false : res.Value;
-            }
-            set
-            {
-                SetMetaDataValue(DISABLED, value.ToString());
-            }
-        }
-
+        
         private Dictionary<string, IMetaDataObject> MetaData = new Dictionary<string, IMetaDataObject>();
-        private Dictionary<string, string> unparsed;
-
-        //public bool MetadataUnparsed { get { return MetaData == null || MetaData.Count == 0; }}
-
+        
         public virtual string GetDisplayName()
         {
             return ProviderID + " > " + SourceName;
@@ -46,10 +28,6 @@ namespace Watcher.Extensions.V2
         {
             ProviderID = providerId;
             SourceName = sourceName;
-
-            SetMetaData(new MetaDataObject(DISABLED, "Disabled", fieldType: MetaDataObjectType.CheckBox));
-            Disabled = disabled;
-            
         }
 
         /// <summary>
@@ -67,28 +45,29 @@ namespace Watcher.Extensions.V2
         }
 
         //TODO: Add to interface, Rename
+        //TODO: Change to Add...
         /// <summary>
         /// Adds the MetaDataObject to MetaData, used for templating
         /// </summary>
         /// <param name="meta"></param>
-        public void SetMetaData(IMetaDataObject meta)
+        public void SetMetaData(IMetaDataObject meta) 
         {
                 MetaData.Add(meta.ID, meta);
         }
 
+        public bool HasMetadata(string key)
+        {
+            return MetaData.ContainsKey(key);
+        }
+        
         /// <summary>
         /// Add a custom metadata value to the source definition
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public ISource SetMetaDataValue(string key, string value)
+        public ISource SetMetaDataValue(string key, string value) //Change to object
         {
-            //TODO: Add to initializer, should inialize the Dictionary with the IMetaDataObjects on create
-            /*if (!ProtectedValues.Contains(key))
-            else throw new Exception(key + " is protected and cannot be explicitly set");
-            */
-            
             MetaData[key].SetValue(value);
             
             return this;
@@ -175,7 +154,8 @@ namespace Watcher.Extensions.V2
 
         public virtual ISource SetMetaData(Dictionary<string, string> metadata)
         {
-            unparsed = metadata;
+            //TODO: Whats this really for?
+            //unparsed = metadata;
             return this;
         }
 
@@ -206,7 +186,10 @@ namespace Watcher.Extensions.V2
             outputSource.SetSourceName(this.SourceName);
         }
 
-
+        /// <summary>
+        /// Sets the MetaData from a List
+        /// </summary>
+        /// <param name="metaData"></param>
         public virtual void SetMetaData(List<IMetaDataObject> metaData)
         {
             Dictionary<string, IMetaDataObject> dict = new Dictionary<string, IMetaDataObject>();
