@@ -9,7 +9,8 @@ namespace Watcher.Client.WPF
     /// </summary>
     public partial class App : Application
     {
-        private void Application_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
+
+        private void Application_Startup(object sender, StartupEventArgs e)
         {
             if (Checker.AlreadyRunning)
                 Environment.Exit(0);

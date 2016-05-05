@@ -142,7 +142,7 @@ namespace Watcher.Provider.Jobs
                         string url = QUERY_BASE + "-startPage-" + i + "-limit-" + size + "-jobs.html";
 
                         var pageItems = GetItemsOnPage(url, source);
-
+                        
                         FilterUtil.FilterAndAdd(pageItems, items, pageCounter, counterLock);
                     }
                 }

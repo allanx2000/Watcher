@@ -137,6 +137,7 @@ namespace Watcher.Core
                             });
 
                             worker.Name = s.GetDisplayName();
+                            worker.IsBackground = true;
 
                             threads.Add(worker);
                         }
@@ -159,6 +160,7 @@ namespace Watcher.Core
                     };
 
                     mainUpdateThread = new Thread(DoUpdates);
+                    mainUpdateThread.IsBackground = true;
 
                     mainUpdateThread.Start(threadParams);
 

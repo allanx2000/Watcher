@@ -1,7 +1,10 @@
-﻿using System;
+﻿using HtmlAgilityPack;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,6 +33,7 @@ namespace Watcher.Provider.Jobs
                 }
             });
 
+            th.IsBackground = true;
             th.Start();
         }
 
@@ -74,6 +78,8 @@ namespace Watcher.Provider.Jobs
 
         internal static void DoFilterAndAdd(List<JobItem> pageItems, ConcurrentBag<IDataItem> items)
         {
+            WebClient wc = new WebClient();
+
             foreach (var i in pageItems)
             {
                 string lower = i.Name.ToLower();
@@ -104,12 +110,43 @@ namespace Watcher.Provider.Jobs
                     }
 
                     exclude = !hasLocation;
+
+                    if (!exclude && NotContract(i, wc))
+                        items.Add(i);
                 }
 
-                if (!exclude)
-                    items.Add(i);
             }
         }
 
+        private static readonly List<string> Contracts = new List<string>() {"CON", "C2H","Contract"};
+      
+        private static bool NotContract(JobItem i, WebClient wc)
+        {
+            try
+            {
+                string page = wc.DownloadString(i.ActionContent);
+
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(page);
+
+                var nodes = doc.DocumentNode.SelectNodes("//div[@class='iconsiblings']");
+                foreach (var node in nodes)
+                {
+                    string content = node.InnerText;
+                    
+                    foreach (string m in Contracts)
+                    {
+                        if (content.Contains(m))
+                            return false;
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
     }
 }
