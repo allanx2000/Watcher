@@ -65,7 +65,10 @@ namespace Watcher.Provider.Jobs
             JobsSource js = new JobsSource(source.SourceName);
             js.SetMetaData(source.GetMetaData()); //Only has non-protected
             js.SetID(source.ID.Value);
-            
+
+            if (source is ISource2)
+                js.Services = ((ISource2)source).Services;
+
             return js;
         }
     }

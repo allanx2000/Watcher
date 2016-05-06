@@ -84,7 +84,7 @@ namespace Watcher.Core
                     AddMessage(t.Name + "was aborted");
                 }
             }
-
+            
             if (mainUpdateThread != null
                 && mainUpdateThread.IsAlive)
             {
@@ -113,11 +113,19 @@ namespace Watcher.Core
 
             try
             {
+                //Move to elsewhere
+                ServiceProvider sp = new ServiceProvider(DataStore);
+
                 List<Thread> threads = new List<Thread>();
                 
                 //Looks for a the provider that can handle it and calls it
                 foreach (AbstractSource s in DataStore.Sources)
                 {
+                    if (s.Services == null)
+                    {
+                        s.Services = sp;
+                    }
+
                     if (excludedIds.Contains(s.ID.Value))
                     {
                         AddMessage(s.GetDisplayName() + ": Skipped");

@@ -6,8 +6,10 @@ using Watcher.Interop;
 namespace Watcher.Extensions.V2
 {
 
-    public abstract class AbstractSource : ISource
+    public abstract class AbstractSource : ISource2
     {   
+        public ServiceProvider Services { get; set; }
+
         public int? ID {get; private set;}
         public string ProviderID {get; private set;}
         public string SourceName { get; private set; }

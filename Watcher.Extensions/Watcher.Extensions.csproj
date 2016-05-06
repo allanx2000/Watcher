@@ -46,7 +46,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interop\ISource2.cs" />
     <Compile Include="Interop\MetaDataObjectType.cs" />
+    <Compile Include="Interop\ServiceProvider.cs" />
     <Compile Include="V2\BasicItem.cs" />
     <Compile Include="Internal\MTObservableCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

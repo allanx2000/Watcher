@@ -13,10 +13,34 @@ using Watcher.Interop;
 
 namespace Watcher.Provider.Jobs
 {
+    //TODO: Move to Watcher core? Or pass in via an interface for upstream Watcher.GUI
     public class FilterUtil
     {
+        /*
+        private static List<Thread> runningThreads = new List<Thread>();
 
-        internal static void FilterAndAdd(List<JobItem> pageItems, ConcurrentBag<IDataItem> items, int pageCounter, object luk)
+        public static IEnumerable<Thread> RunningThreads
+        {
+            get
+            {
+                var running = runningThreads.Where(x => x.ThreadState == ThreadState.Running).ToList();
+
+                List<Thread> dead = new List<Thread>();
+                foreach (var t in runningThreads)
+                {
+                    if (!running.Contains(t))
+                        dead.Add(t);
+                }
+
+                foreach (var t in dead)
+                    runningThreads.Remove(t);
+
+                return running;
+            }
+        }
+        */
+
+        internal static void FilterAndAdd(List<JobItem> pageItems, ConcurrentBag<IDataItem> items, int pageCounter, object luk, ServiceProvider sp)
         {
             Thread th = new Thread(() =>
             {
@@ -25,12 +49,13 @@ namespace Watcher.Provider.Jobs
                     pageCounter++;
                 }
 
-                DoFilterAndAdd(pageItems, items);
+                DoFilterAndAdd(pageItems, items, sp);
 
                 lock (luk)
                 {
                     pageCounter--;
                 }
+
             });
 
             th.IsBackground = true;
@@ -76,7 +101,7 @@ namespace Watcher.Provider.Jobs
         };
 
 
-        internal static void DoFilterAndAdd(List<JobItem> pageItems, ConcurrentBag<IDataItem> items)
+        internal static void DoFilterAndAdd(List<JobItem> pageItems, ConcurrentBag<IDataItem> items, ServiceProvider sp)
         {
             WebClient wc = new WebClient();
 
@@ -111,15 +136,20 @@ namespace Watcher.Provider.Jobs
 
                     exclude = !hasLocation;
 
-                    if (!exclude && NotContract(i, wc))
-                        items.Add(i);
                 }
 
+                if (!exclude && sp != null)
+                {
+                    exclude = sp.ItemExists(i);
+                }
+
+                if (!exclude && NotContract(i, wc))
+                    items.Add(i);
             }
         }
 
-        private static readonly List<string> Contracts = new List<string>() {"CON", "C2H","Contract"};
-      
+        private static readonly List<string> Contracts = new List<string>() { "CON", "C2H", "Contract" };
+
         private static bool NotContract(JobItem i, WebClient wc)
         {
             try
@@ -133,7 +163,7 @@ namespace Watcher.Provider.Jobs
                 foreach (var node in nodes)
                 {
                     string content = node.InnerText;
-                    
+
                     foreach (string m in Contracts)
                     {
                         if (content.Contains(m))
