@@ -100,7 +100,7 @@ namespace Watcher.Provider.Jobs
             "manhattan",
         };
 
-
+        private static ConcurrentBag<string> cache = new ConcurrentBag<string>();
         internal static void DoFilterAndAdd(List<JobItem> pageItems, ConcurrentBag<IDataItem> items, ServiceProvider sp)
         {
             WebClient wc = new WebClient();
@@ -138,12 +138,20 @@ namespace Watcher.Provider.Jobs
 
                 }
 
-                if (!exclude && sp != null)
+                if (exclude)
+                    continue;
+
+                lock (cache)
                 {
-                    exclude = sp.ItemExists(i);
+                    if (cache.Contains(i.ActionContent))
+                    {
+                        continue;
+                    }
+                    else
+                        cache.Add(i.ActionContent);
                 }
 
-                if (!exclude && NotContract(i, wc))
+                if (NotContract(i, wc))
                     items.Add(i);
             }
         }

@@ -312,6 +312,7 @@ namespace Watcher.DataStore.SQLite
         public override List<IDataItem> Search(string filter)
         {
             string sql = "select * from {0} where Name LIKE '%{1}%'";
+            filter = SQLUtils.SQLEncode(filter);
             sql = String.Format(sql, ItemsTable, filter);
 
             return LoadItemsFromTable(sqlWrapper.ExecuteSelect(sql));
