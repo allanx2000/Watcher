@@ -10,7 +10,7 @@ namespace Watcher.Client.WPF.ViewModels
 {
     public class SourceViewModel : ViewModel<ISource>
     {
-
+        public static readonly Color DisabledColor = Colors.Gray;
         public static readonly Color DefaultColor = Colors.Black;
 
         public const string UPDATES_COLOR = "UpdatesColor";
@@ -63,11 +63,14 @@ namespace Watcher.Client.WPF.ViewModels
             {
                 try
                 {
+                    if (Disabled)
+                        return DisabledColor;
+
                     var color = Data.GetMetaDataValue(UPDATES_COLOR);
                     if (color != null)
                         return DeserializeColor(color.ToString());
                     else
-                        return Colors.Black;
+                        return DefaultColor;
                 }
                 catch
                 {

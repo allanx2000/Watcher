@@ -45,6 +45,34 @@ namespace Watcher.Client.WPF.ViewModels
         private MTObservableCollection<ItemViewModel> items = new MTObservableCollection<ItemViewModel>();
         private MTObservableCollection<SourceViewModel> sources = new MTObservableCollection<SourceViewModel>();
 
+        public MainWindowViewModel()
+        {
+            var sources = DataManager.Instance().DataStore.Sources;
+            
+            PopulateSourcesAndSVMLookup(sources);
+
+            DataManager.Instance().Messages.CollectionChanged += Messages_CollectionChanged;
+
+            LoadDefaultItems();
+        }
+
+        private void LoadDefaultItems()
+        {
+            var items = DataManager.Instance().DataStore.Items;
+
+            foreach (var i in items)
+            {
+                if (i != null)
+                {
+                    this.items.Add(new ItemViewModel(i, SVMLookup[i.GetSource()]));
+                }
+            }
+
+            CreateSortedItemsView();
+        }
+
+
+
         #region Properties
 
         private ItemViewModel selectedItem;
@@ -286,6 +314,12 @@ namespace Watcher.Client.WPF.ViewModels
             }
         }
 
+        CollectionViewSource sourcesView;
+        public ICollectionView SourcesView
+        {
+            get { return sourcesView.View; }
+        }
+
         public MTObservableCollection<SourceViewModel> Sources
         {
             get
@@ -369,6 +403,8 @@ namespace Watcher.Client.WPF.ViewModels
                 SourceEditor se = new SourceEditor(SelectedSource);
 
                 se.ShowDialog();
+
+                SourcesView.Refresh();
             }
         }
 
@@ -603,32 +639,6 @@ namespace Watcher.Client.WPF.ViewModels
             return SVMLookup[source];
         }
 
-
-        public MainWindowViewModel()
-        {
-            var sources = DataManager.Instance().DataStore.Sources;
-
-            PopulateSVMLookup(sources);
-
-            DataManager.Instance().Messages.CollectionChanged += Messages_CollectionChanged;
-
-            LoadDefaultItems();
-        }
-        private void LoadDefaultItems()
-        {
-            var items = DataManager.Instance().DataStore.Items;
-
-            foreach (var i in items)
-            {
-                if (i != null)
-                {
-                    this.items.Add(new ItemViewModel(i, SVMLookup[i.GetSource()]));
-                }
-            }
-
-            CreateSortedItemsView();
-        }
-
         private void Messages_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e != null && e.NewItems != null && e.NewItems.Count > 0)
@@ -687,7 +697,7 @@ namespace Watcher.Client.WPF.ViewModels
         }
 
 
-        private void PopulateSVMLookup(IEnumerable<ISource> sources)
+        private void PopulateSourcesAndSVMLookup(IEnumerable<ISource> sources)
         {
             foreach (var s in sources)
             {
@@ -696,6 +706,12 @@ namespace Watcher.Client.WPF.ViewModels
 
                 SVMLookup.Add(s, svm);
             }
+
+            sourcesView = new CollectionViewSource();
+            sourcesView.Source = this.sources;
+
+            sourcesView.SortDescriptions.Add(new SortDescription("Disabled", ListSortDirection.Ascending));
+            sourcesView.SortDescriptions.Add(new SortDescription("DisplayName", ListSortDirection.Ascending));
         }
 
 

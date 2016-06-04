@@ -30,7 +30,7 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <ListBox Grid.Row="0" ItemsSource="{Binding Sources}"  SelectedItem="{Binding SelectedSource}" Name="SourcesListBox" >
+                <ListBox Grid.Row="0" ItemsSource="{Binding SourcesView}"  SelectedItem="{Binding SelectedSource}" Name="SourcesListBox" >
                     <ListBox.ItemTemplate>
                         <DataTemplate DataType="viewModels:SourceViewModel">
                             <Label Content="{Binding DisplayName}" Foreground="{Binding UpdatesColorBrush}" />
