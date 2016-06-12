@@ -16,7 +16,7 @@ namespace Watcher.Provider.HundredZero
     {
         public const string PROVIDER = "HundredZero";
 
-        private const string BASE_URL = "http://hundredzeros.com/category/";
+        private const string BASE_URL = "http://hundredzeros.com/";
 
         private const string META_MAX_PAGES = "MaxPages";
         private const string META_URL = "CategoryUrl";
@@ -35,23 +35,6 @@ namespace Watcher.Provider.HundredZero
 
             return meta;
         }
-
-        /*
-        public override List<string> GetMetaFields()
-        {
-            return new List<string>() {
-                META_URL,
-                META_MAX_PAGES
-            };
-        }*/
-
-        /*
-        public override SourceOptions GetSourceOptions()
-        {
-            return SourceOptions.CreateFromParameters(true, false);
-        }
-        */
-
             
         protected override ISource DoCreateNewSource(string name, string url, List<IMetaDataObject> metaData)
         {
@@ -74,28 +57,7 @@ namespace Watcher.Provider.HundredZero
             AbstractSource s = new HundredZeroSource(name);
 
             s.SetMetaData(metaData);
-
-            //TODO: Not needed?
-
-            /*
-            foreach (var kv in s.GetMetaData())
-            {
-                string displayName = null;
-                switch(kv.Value.ID)
-                {
-                    case META_URL:
-                        displayName = "Category URL";
-                        break;
-                    case META_MAX_PAGES:
-                        displayName = "Max Pages";
-                        break;
-                }
-
-                if (displayName != null)
-                    kv.Value.SetDisplayName(displayName);
-            }
-            */
-
+            
             return s;
         }
 

@@ -41,6 +41,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watcher.Provider.Jobs", "Wa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innouvous.Utils.SingleInstance", "..\Innouvous.Utils\Innouvous.Utils.SingleInstance\Innouvous.Utils.SingleInstance.csproj", "{2A6B9C5E-D317-4FA5-8571-FC8C25E1D379}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watcher.Provider.RSS", "Watcher.Provider.RSS\Watcher.Provider.RSS.csproj", "{8B32EC31-936C-4A06-99F0-60F85CD45FE8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -119,6 +121,10 @@ Global
 		{2A6B9C5E-D317-4FA5-8571-FC8C25E1D379}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A6B9C5E-D317-4FA5-8571-FC8C25E1D379}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A6B9C5E-D317-4FA5-8571-FC8C25E1D379}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B32EC31-936C-4A06-99F0-60F85CD45FE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B32EC31-936C-4A06-99F0-60F85CD45FE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B32EC31-936C-4A06-99F0-60F85CD45FE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B32EC31-936C-4A06-99F0-60F85CD45FE8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

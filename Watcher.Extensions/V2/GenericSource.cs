@@ -13,6 +13,6 @@ namespace Watcher.Extensions.V2
             : base(sourceName, providerId, disabled)
         {
         }
-
+        
     }
 }

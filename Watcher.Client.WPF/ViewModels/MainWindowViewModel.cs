@@ -524,11 +524,18 @@ namespace Watcher.Client.WPF.ViewModels
                 var provider = DataManager.Instance().GetProviders().First(x => x.ProviderId == o.Provider);
                 if (provider != null)
                 {
-                    provider.DoAction(o.Data);
-                    o.Data.SetNew(false);
-                    DataManager.Instance().DataStore.UpdateItem(o.Data);
+                    try
+                    {
+                        provider.DoAction(o.Data);
+                        o.Data.SetNew(false);
+                        DataManager.Instance().DataStore.UpdateItem(o.Data);
 
-                    SortedView.Refresh();
+                        SortedView.Refresh();
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBoxFactory.ShowError("Cannot perform action on: " + o.Data, "Cannot Perform Action");
+                    }
                 }
             }
         }

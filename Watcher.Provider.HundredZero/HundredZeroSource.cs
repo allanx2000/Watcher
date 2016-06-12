@@ -19,7 +19,7 @@ namespace Watcher.Provider.HundredZero
 
         public override string GetDisplayName()
         {
-            return SourceName;
+            return ProviderID + " > " + SourceName;
         }
     }
 }
