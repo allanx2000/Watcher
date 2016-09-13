@@ -141,6 +141,9 @@ namespace Watcher.Client.WPF
         //Easier here
         private void OptionsMenuItem_Click(object sender, RoutedEventArgs e)
         {
+            bool top = viewModel.TopMost;
+            viewModel.TopMost = false;
+
             var window = new RunConfigsWindow();
             window.ShowDialog();
 
@@ -148,6 +151,8 @@ namespace Watcher.Client.WPF
             {
                 LoadFromConfigurations();
             }
+
+            viewModel.TopMost = top;
         }
 
 

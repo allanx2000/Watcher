@@ -341,7 +341,7 @@ namespace Watcher.Client.WPF.ViewModels
                         var item = meta.FirstOrDefault(x => x.ID == id);
 
                         if (item != null) //TODO: Disabled hack
-                        item.SetValue(value);
+                            item.SetValue(value);
                     }
                 }
 

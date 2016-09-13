@@ -283,26 +283,33 @@ namespace Watcher.Client.WPF.ViewModels
 
         private void DoSearch()
         {
-            if (IsSearching)
-                ClearSearch();
-            else
+            try
             {
-                if (String.IsNullOrEmpty(SearchFilter.Trim()))
-                    throw new Exception("No search string entered");
-
-                items.Clear();
-                List<IDataItem> results = DataManager.Instance().DataStore.Search(SearchFilter);
-
-                foreach (var i in results)
+                if (IsSearching)
+                    ClearSearch();
+                else
                 {
-                    Items.Add(new ItemViewModel(i, SVMLookup[i.GetSource()]));
-                }
-            }
-            
-            SortedView.Refresh();
-            IsSearching = !IsSearching;
+                    if (SearchFilter == null || string.IsNullOrEmpty(SearchFilter.Trim()))
+                        throw new Exception("No search string entered");
 
-            RefreshViewModel();
+                    items.Clear();
+                    List<IDataItem> results = DataManager.Instance().DataStore.Search(SearchFilter);
+
+                    foreach (var i in results)
+                    {
+                        Items.Add(new ItemViewModel(i, SVMLookup[i.GetSource()]));
+                    }
+                }
+
+                SortedView.Refresh();
+                IsSearching = !IsSearching;
+
+                RefreshViewModel();
+            }
+            catch (Exception e)
+            {
+                MessageBoxFactory.ShowError(e);
+            }
         }
 
 
@@ -558,12 +565,18 @@ namespace Watcher.Client.WPF.ViewModels
 
             var opts = DialogControlOptions.SetTextBoxMessageOptions(message, false);
 
+            
             var window = new Innouvous.Utils.DialogWindow.Windows.SimpleDialogWindow(opts);
             window.Title = "Status";
+            
+            bool top = TopMost;
+            TopMost = false;
 
             window.ShowDialog();
+
+            TopMost = top;
         }
-        
+
         #endregion
         #endregion
 
